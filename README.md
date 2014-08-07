@@ -1,9 +1,7 @@
 gettext-go
 ==========
 
-This package provides GNU gettext support.
-
-PkgDoc: [http://godoc.org/github.com/chai2010/gettext-go](http://godoc.org/github.com/chai2010/gettext-go)
+PkgDoc: [http://godoc.org/github.com/chai2010/gettext-go/gettext](http://godoc.org/github.com/chai2010/gettext-go/gettext)
 
 Instasll
 ========
