@@ -100,7 +100,6 @@ func (p *fileSystem) LoadMessagesFile(domain, local, ext string) ([]byte, error)
 		}
 		return nil, fmt.Errorf("not found")
 	}
-	return nil, nil
 }
 
 func (p *fileSystem) LoadResourceFile(domain, local, name string) ([]byte, error) {

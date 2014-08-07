@@ -72,7 +72,7 @@ func (p *Message) readPoEntry(r *lineReader) (err error) {
 		}
 
 		if p.isInvalidLine(s) {
-			err = fmt.Errorf("gettext: line %d, %v", "invalid line")
+			err = fmt.Errorf("gettext: line %d, %v", r.currentPos(), "invalid line")
 			return
 		}
 		if reComment.MatchString(s) || reBlankLine.MatchString(s) {
@@ -92,8 +92,6 @@ func (p *Message) readPoEntry(r *lineReader) (err error) {
 			return
 		}
 	}
-
-	return nil
 }
 
 func (p *Message) readMsgContext(r *lineReader) (err error) {

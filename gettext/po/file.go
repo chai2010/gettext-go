@@ -47,7 +47,6 @@ func LoadData(data []byte) (*File, error) {
 		}
 		file.Messages = append(file.Messages, msg)
 	}
-	return &file, nil
 }
 
 // Save saves a po file.

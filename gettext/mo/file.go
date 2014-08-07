@@ -184,7 +184,7 @@ func (f *File) String() string {
 	fmt.Fprintf(&buf, "\n")
 
 	for k, v := range f.Messages {
-		fmt.Fprintf(&buf, `msgid "%s"`+"\n", k)
+		fmt.Fprintf(&buf, `msgid "%v"`+"\n", k)
 		fmt.Fprintf(&buf, `msgstr "%s"`+"\n", v.MsgStr)
 		fmt.Fprintf(&buf, "\n")
 	}

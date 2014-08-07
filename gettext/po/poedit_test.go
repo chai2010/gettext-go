@@ -27,7 +27,7 @@ func _TestPoEditPoFile(t *testing.T) {
 	}
 	for k, v0 := range po.Messages {
 		if v1 := poEditFile.Messages[k]; !reflect.DeepEqual(&v0, &v1) {
-			t.Fatalf("%s: expect = %v, got = %v", k, v1, v0)
+			t.Fatalf("%d: expect = %v, got = %v", k, v1, v0)
 		}
 	}
 }
