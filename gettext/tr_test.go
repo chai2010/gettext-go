@@ -7,8 +7,8 @@ package gettext
 import (
 	"testing"
 
-	"code.google.com/p/gettext-go/gettext/mo"
-	"code.google.com/p/gettext-go/gettext/po"
+	"github.com/chai2010/gettext-go/gettext/mo"
+	"github.com/chai2010/gettext-go/gettext/po"
 )
 
 func TestTranslator_Po(t *testing.T) {

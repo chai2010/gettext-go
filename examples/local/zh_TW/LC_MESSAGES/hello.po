@@ -30,6 +30,6 @@ msgctxt "main.func"
 msgid "Gettext in func."
 msgstr "閉包函數中的Gettext."
 
-msgctxt "code.google.com/p/gettext-go/examples/hi.SayHi"
+msgctxt "github.com/chai2010/gettext-go/examples/hi.SayHi"
 msgid "pkg hi: Hello, world!"
 msgstr "來自\"Hi\"包的問候: 你好, 世界!"

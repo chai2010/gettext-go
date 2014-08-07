@@ -30,31 +30,31 @@ func TestCallerName(t *testing.T) {
 	var name string
 
 	// init
-	name = `code.google.com/p/gettext-go/gettext.init`
+	name = `github.com/chai2010/gettext-go/gettext.init`
 	if s := testInitCallerName0; s != name {
 		t.Fatalf("expect = %s, got = %s", name, s)
 	}
-	name = `code.google.com/p/gettext-go/gettext.init`
+	name = `github.com/chai2010/gettext-go/gettext.init`
 	if s := testInitCallerName1; s != name {
 		t.Fatalf("expect = %s, got = %s", name, s)
 	}
-	name = `code.google.com/p/gettext-go/gettext.init`
+	name = `github.com/chai2010/gettext-go/gettext.init`
 	if s := testInitCallerName2; s != name {
 		t.Fatalf("expect = %s, got = %s", name, s)
 	}
 
 	// tInit -> gettext.func
-	name = `code.google.com/p/gettext-go/gettext.func`
+	name = `github.com/chai2010/gettext-go/gettext.func`
 	if s := tCaller(0); s != name {
 		t.Fatalf("expect = %s, got = %s", name, s)
 	}
 
 	// caller stack
-	name = `code.google.com/p/gettext-go/gettext.callerName`
+	name = `github.com/chai2010/gettext-go/gettext.callerName`
 	if s := callerName(0); s != name {
 		t.Fatalf("expect = %s, got = %s", name, s)
 	}
-	name = `code.google.com/p/gettext-go/gettext.TestCallerName`
+	name = `github.com/chai2010/gettext-go/gettext.TestCallerName`
 	if s := callerName(1); s != name {
 		t.Fatalf("expect = %s, got = %s", name, s)
 	}
@@ -73,14 +73,14 @@ func TestCallerName(t *testing.T) {
 
 	// closure
 	func() {
-		name = `code.google.com/p/gettext-go/gettext.func`
+		name = `github.com/chai2010/gettext-go/gettext.func`
 		if s := callerName(1); s != name {
 			t.Fatalf("expect = %s, got = %s", name, s)
 		}
 	}()
 	func() {
 		func() {
-			name = `code.google.com/p/gettext-go/gettext.func`
+			name = `github.com/chai2010/gettext-go/gettext.func`
 			if s := callerName(1); s != name {
 				t.Fatalf("expect = %s, got = %s", name, s)
 			}

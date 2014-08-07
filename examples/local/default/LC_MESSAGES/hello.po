@@ -30,6 +30,6 @@ msgctxt "main.func"
 msgid "Gettext in func."
 msgstr ""
 
-msgctxt "code.google.com/p/gettext-go/examples/hi.SayHi"
+msgctxt "github.com/chai2010/gettext-go/examples/hi.SayHi"
 msgid "pkg hi: Hello, world!"
 msgstr ""
