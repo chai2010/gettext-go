@@ -45,7 +45,7 @@ Example
 		// Output: ...
 	}
 
-Go file: hello.go; PO file: hello.po;
+Go file: [hello.go](https://github.com/chai2010/gettext-go/blob/master/examples/hello.go); PO file: [hello.po](https://github.com/chai2010/gettext-go/blob/master/examples/local/default/LC_MESSAGES/hello.po);
 
 BUGS
 ====
