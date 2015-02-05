@@ -48,9 +48,10 @@ func decodePoString(text string) string {
 func encodePoString(text string) string {
 	var buf bytes.Buffer
 	lines := strings.Split(text, "\n")
-	for i := 0; i < len(lines); i++ {
+	lenLines := len(lines)
+	for i := 0; i < lenLines; i++ {
 		if lines[i] == "" {
-			if i != len(lines)-1 {
+			if i != lenLines-1 {
 				buf.WriteString(`"\n"` + "\n")
 			}
 			continue
@@ -70,7 +71,7 @@ func encodePoString(text string) string {
 				buf.WriteRune(r)
 			}
 		}
-		if len(lines) > 1 {
+		if lenLines > 1 && i != lenLines-1 {
 			buf.WriteString(`\n"` + "\n")
 		} else {
 			buf.WriteString(`"` + "\n")
