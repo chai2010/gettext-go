@@ -3,7 +3,7 @@ gettext-go
 
 PkgDoc: [http://godoc.org/github.com/chai2010/gettext-go/gettext](http://godoc.org/github.com/chai2010/gettext-go/gettext)
 
-Instasll
+Install
 ========
 
 1. `go get github.com/chai2010/gettext-go/gettext`
