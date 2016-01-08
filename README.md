@@ -37,6 +37,11 @@ func main() {
 	fmt.Println(gettext.Gettext("Hello, world!"))
 	// Output: 你好, 世界!
 
+	// if no msgctxt in PO file (only msgid and msgstr),
+	// specify context as "" by
+	fmt.Println(gettext.PGettext("", "Hello, world!"))
+	// Output: 你好, 世界!
+
 	// translate resource
 	fmt.Println(string(gettext.Getdata("poems.txt"))))
 	// Output: ...
