@@ -9,7 +9,7 @@ package main
 import (
 	"fmt"
 
-	"code.google.com/p/gettext-go/gettext"
+	"github.com/chai2010/gettext-go"
 )
 
 func main() {
