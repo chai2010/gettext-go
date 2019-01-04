@@ -18,7 +18,7 @@ import (
 //
 // See http://www.gnu.org/software/gettext/manual/html_node/PO-Files.html
 type Message struct {
-	Comment               // Coments
+	Comment               // Comments
 	MsgContext   string   // msgctxt context
 	MsgId        string   // msgid untranslated-string
 	MsgIdPlural  string   // msgid_plural untranslated-string-plural
