@@ -46,12 +46,12 @@ func TestPoMoFiles(t *testing.T) {
 		// if no translate, the mo will drop the message.
 		// so len(mo) may less than len(po).
 		if a, b := len(po.MessageMap), len(mo.MessageMap); a != b {
-			t.Logf("%s: %v, %d != %d", poName, "size not equal", a, b)
+			//t.Logf("%s: %v, %d != %d", poName, "size not equal", a, b)
 		}
 		for k, v0 := range po.MessageMap {
 			v1, ok := mo.MessageMap[k]
 			if !ok {
-				t.Logf("%s: %q: missing", poName, v0.MsgId)
+				//t.Logf("%s: %q: missing", poName, v0.MsgId)
 				continue
 			}
 			if !reflect.DeepEqual(&v0, &v1) {

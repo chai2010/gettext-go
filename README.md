@@ -1,6 +1,58 @@
 gettext-go
 ==========
 
+### Change 变化 (2019-3-30)：
+
+Add a logger to save keywords not translated.
+
+use `gettext.SaveLog()` to save keywords not translated to 'messages.log'.
+
+- 用函数`gettext.SaveLog()`保存未翻译的关键词.
+- 用函数`gettext.T(s string)`翻译没有`msgctxt`信息的关键字。
+
+用法(Usage)：
+
+```
+//generate messages.log:
+/*
+# 2019-04-01 08:09:29
+
+msgid "Friends"
+msgstr ""
+
+msgid "World"
+msgstr ""
+
+msgid ""
+"I love\n"
+"World"
+msgstr ""
+
+msgid "Hello"
+msgstr ""
+*/
+package main
+
+import (
+	"fmt"
+
+	"github.com/chai2010/gettext-go/gettext"
+)
+
+var T = gettext.T
+
+func main() {
+	gettext.BindTextdomain("exam", "locale", nil)
+	gettext.Textdomain("exam")
+	defer gettext.SaveLog()
+
+	fmt.Println(T("Hello"))
+	fmt.Println(T("Friends"))
+	fmt.Println(T("World"))
+	fmt.Println(T("I love\nWorld"))
+}
+```
+
 PkgDoc: [http://godoc.org/github.com/chai2010/gettext-go/gettext](http://godoc.org/github.com/chai2010/gettext-go/gettext)
 
 Install

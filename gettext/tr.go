@@ -97,6 +97,7 @@ func (p *translator) PNGettext(msgctxt, msgid, msgidPlural string, n int) string
 	if msgidPlural != "" && n > 0 {
 		return msgidPlural
 	}
+	logger.Log(msgid)
 	return msgid
 }
 

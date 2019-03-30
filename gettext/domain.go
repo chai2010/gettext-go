@@ -85,6 +85,7 @@ func (p *domainManager) DPNGettext(domain, msgctxt, msgid, msgidPlural string, n
 	return p.gettext(domain, msgctxt, msgid, msgidPlural, n)
 }
 
+//gettext : PGettext -> PNGettext -> domainManager.PNGettext -> domainManager.gettext
 func (p *domainManager) gettext(domain, msgctxt, msgid, msgidPlural string, n int) string {
 	if p.locale == "" || p.domain == "" {
 		return msgid
@@ -95,6 +96,7 @@ func (p *domainManager) gettext(domain, msgctxt, msgid, msgidPlural string, n in
 	if f, ok := p.trTextMap[p.makeTrMapKey(domain, p.locale)]; ok {
 		return f.PNGettext(msgctxt, msgid, msgidPlural, n)
 	}
+	logger.Log(msgid)
 	return msgid
 }
 
