@@ -5,9 +5,9 @@
 package gettext
 
 import (
-	"github.com/chai2010/gettext-go/gettext/mo"
-	"github.com/chai2010/gettext-go/gettext/plural"
-	"github.com/chai2010/gettext-go/gettext/po"
+	"github.com/rocket049/gettext-go/gettext/mo"
+	"github.com/rocket049/gettext-go/gettext/plural"
+	"github.com/rocket049/gettext-go/gettext/po"
 )
 
 var nilTranslator = &translator{
