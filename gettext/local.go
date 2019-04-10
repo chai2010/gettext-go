@@ -5,30 +5,13 @@
 package gettext
 
 import (
-	"os"
-	"strings"
+	go_locale "github.com/rocket049/go-locale"
 )
 
 func getDefaultLocale() string {
-	if v := os.Getenv("LC_MESSAGES"); v != "" {
-		return simplifiedLocale(v)
+	loc, err := go_locale.DetectLocale()
+	if err != nil {
+		return "default"
 	}
-	if v := os.Getenv("LANG"); v != "" {
-		return simplifiedLocale(v)
-	}
-	return "default"
-}
-
-func simplifiedLocale(lang string) string {
-	// en_US/en_US.UTF-8/zh_CN/zh_TW/el_GR@euro/...
-	if idx := strings.Index(lang, ":"); idx != -1 {
-		lang = lang[:idx]
-	}
-	if idx := strings.Index(lang, "@"); idx != -1 {
-		lang = lang[:idx]
-	}
-	if idx := strings.Index(lang, "."); idx != -1 {
-		lang = lang[:idx]
-	}
-	return strings.TrimSpace(lang)
+	return loc
 }
