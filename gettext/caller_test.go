@@ -5,6 +5,8 @@
 package gettext
 
 import (
+	"runtime"
+	"strings"
 	"testing"
 )
 
@@ -73,14 +75,42 @@ func TestCallerName(t *testing.T) {
 
 	// closure
 	func() {
-		name = `github.com/chai2010/gettext-go/gettext.func`
+		switch s := runtime.Version(); true {
+		case s == "go1.3" || strings.HasPrefix(s, "go1.3."),
+			s == "go1.4" || strings.HasPrefix(s, "go1.4."),
+			s == "go1.5" || strings.HasPrefix(s, "go1.5."):
+			name = `github.com/chai2010/gettext-go/gettext.func`
+
+		case s == "go1.10" || strings.HasPrefix(s, "go1.10."),
+			s == "go1.11" || strings.HasPrefix(s, "go1.11."),
+			s == "go1.12" || strings.HasPrefix(s, "go1.12."),
+			s == "go1.13" || strings.HasPrefix(s, "go1.13."):
+			name = `github.com/chai2010/gettext-go/gettext.TestCallerName.func`
+
+		default: // tip
+			name = `github.com/chai2010/gettext-go/gettext.TestCallerName.func`
+		}
 		if s := callerName(1); s != name {
 			t.Fatalf("expect = %s, got = %s", name, s)
 		}
 	}()
 	func() {
 		func() {
-			name = `github.com/chai2010/gettext-go/gettext.func`
+			switch s := runtime.Version(); true {
+			case s == "go1.3" || strings.HasPrefix(s, "go1.3."),
+				s == "go1.4" || strings.HasPrefix(s, "go1.4."),
+				s == "go1.5" || strings.HasPrefix(s, "go1.5."):
+				name = `github.com/chai2010/gettext-go/gettext.func`
+
+			case s == "go1.10" || strings.HasPrefix(s, "go1.10."),
+				s == "go1.11" || strings.HasPrefix(s, "go1.11."),
+				s == "go1.12" || strings.HasPrefix(s, "go1.12."),
+				s == "go1.13" || strings.HasPrefix(s, "go1.13."):
+				name = `github.com/chai2010/gettext-go/gettext.TestCallerName.func`
+
+			default: // tip
+				name = `github.com/chai2010/gettext-go/gettext.TestCallerName.func`
+			}
 			if s := callerName(1); s != name {
 				t.Fatalf("expect = %s, got = %s", name, s)
 			}
