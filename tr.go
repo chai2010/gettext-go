@@ -26,9 +26,9 @@ func newMoTranslator(name string, data []byte) (*translator, error) {
 		err error
 	)
 	if len(data) != 0 {
-		f, err = mo.LoadData(data)
+		f, err = mo.Load(data)
 	} else {
-		f, err = mo.Load(name)
+		f, err = mo.LoadFile(name)
 	}
 	if err != nil {
 		return nil, err

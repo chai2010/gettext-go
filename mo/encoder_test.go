@@ -11,7 +11,7 @@ import (
 )
 
 func TestFile_Data(t *testing.T) {
-	f, err := LoadData(testMoFile.Data())
+	f, err := Load(testMoFile.Data())
 	if err != nil {
 		t.Fatal(err)
 	}
