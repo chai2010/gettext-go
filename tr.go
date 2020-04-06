@@ -53,9 +53,9 @@ func newPoTranslator(name string, data []byte) (*translator, error) {
 		err error
 	)
 	if len(data) != 0 {
-		f, err = po.LoadData(data)
+		f, err = po.Load(data)
 	} else {
-		f, err = po.Load(name)
+		f, err = po.LoadFile(name)
 	}
 	if err != nil {
 		return nil, err

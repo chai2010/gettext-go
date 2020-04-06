@@ -11,7 +11,7 @@ Examples:
 	)
 
 	func main() {
-		poFile, err := po.Load("test.po")
+		poFile, err := po.LoadFile("test.po")
 		if err != nil {
 			log.Fatal(err)
 		}

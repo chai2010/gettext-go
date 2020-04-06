@@ -37,7 +37,7 @@ func TestTranslator_Mo(t *testing.T) {
 }
 
 func poToMoData(t *testing.T, data []byte) []byte {
-	poFile, err := po.LoadData(data)
+	poFile, err := po.Load(data)
 	if err != nil {
 		t.Fatal(err)
 	}
