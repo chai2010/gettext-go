@@ -7,12 +7,12 @@
 gettext-go
 ==========
 
-PkgDoc: [http://godoc.org/github.com/chai2010/gettext-go/gettext](http://godoc.org/github.com/chai2010/gettext-go/gettext)
+PkgDoc: [http://godoc.org/github.com/chai2010/gettext-go](http://godoc.org/github.com/chai2010/gettext-go)
 
 Install
 ========
 
-1. `go get github.com/chai2010/gettext-go/gettext`
+1. `go get github.com/chai2010/gettext-go`
 2. `go run hello.go`
 
 The godoc.org or gowalker.org has more information.
@@ -26,7 +26,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/chai2010/gettext-go/gettext"
+	"github.com/chai2010/gettext-go"
 )
 
 func main() {

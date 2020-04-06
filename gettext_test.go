@@ -11,7 +11,7 @@ import (
 )
 
 var testZipData = func() []byte {
-	if data, err := ioutil.ReadFile("../examples/local.zip"); err == nil {
+	if data, err := ioutil.ReadFile("./examples/local.zip"); err == nil {
 		return data
 	}
 	return nil
@@ -21,13 +21,13 @@ func TestGettext(t *testing.T) {
 	Textdomain("hello")
 
 	// local file system
-	BindTextdomain("hello", "../examples/local", nil)
+	BindTextdomain("hello", "./examples/local", nil)
 	testGettext(t, true)
 	BindTextdomain("hello", "", nil)
 	testGettext(t, false)
 
 	// local zip file system
-	BindTextdomain("hello", "../examples/local.zip", nil)
+	BindTextdomain("hello", "./examples/local.zip", nil)
 	testGettext(t, true)
 	BindTextdomain("hello", "", nil)
 	testGettext(t, false)
@@ -43,13 +43,13 @@ func TestGetdata(t *testing.T) {
 	Textdomain("hello")
 
 	// local file system
-	BindTextdomain("hello", "../examples/local", nil)
+	BindTextdomain("hello", "./examples/local", nil)
 	testGetdata(t, true)
 	BindTextdomain("hello", "", nil)
 	testGetdata(t, false)
 
 	// local zip file system
-	BindTextdomain("hello", "../examples/local.zip", nil)
+	BindTextdomain("hello", "./examples/local.zip", nil)
 	testGetdata(t, true)
 	BindTextdomain("hello", "", nil)
 	testGetdata(t, false)
@@ -99,7 +99,7 @@ func testGetdata(t *testing.T, hasTransle bool) {
 
 func BenchmarkGettext(b *testing.B) {
 	SetLocale("zh_CN")
-	BindTextdomain("hello", "../examples/local", nil)
+	BindTextdomain("hello", "./examples/local", nil)
 	Textdomain("hello")
 
 	b.ResetTimer()
@@ -109,7 +109,7 @@ func BenchmarkGettext(b *testing.B) {
 }
 func BenchmarkGettext_Zip(b *testing.B) {
 	SetLocale("zh_CN")
-	BindTextdomain("hello", "../examples/local.zip", nil)
+	BindTextdomain("hello", "./examples/local.zip", nil)
 	Textdomain("hello")
 
 	b.ResetTimer()
@@ -120,7 +120,7 @@ func BenchmarkGettext_Zip(b *testing.B) {
 
 func BenchmarkGetdata(b *testing.B) {
 	SetLocale("zh_CN")
-	BindTextdomain("hello", "../examples/local", nil)
+	BindTextdomain("hello", "./examples/local", nil)
 	Textdomain("hello")
 
 	b.ResetTimer()
@@ -130,7 +130,7 @@ func BenchmarkGetdata(b *testing.B) {
 }
 func BenchmarkGetdata_Zip(b *testing.B) {
 	SetLocale("zh_CN")
-	BindTextdomain("hello", "../examples/local.zip", nil)
+	BindTextdomain("hello", "./examples/local.zip", nil)
 	Textdomain("hello")
 
 	b.ResetTimer()

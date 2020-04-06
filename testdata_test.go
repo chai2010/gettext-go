@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-var testDataDir = "../testdata/"
+var testDataDir = "./testdata/"
 
 var testPoMoFiles = []struct {
 	poFile string

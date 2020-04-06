@@ -7,7 +7,7 @@ Package gettext implements a basic GNU's gettext library.
 
 Example:
 	import (
-		"github.com/chai2010/gettext-go/gettext"
+		"github.com/chai2010/gettext-go"
 	)
 
 	func main() {

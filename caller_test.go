@@ -32,31 +32,31 @@ func TestCallerName(t *testing.T) {
 	var name string
 
 	// init
-	name = `github.com/chai2010/gettext-go/gettext.init`
+	name = `github.com/chai2010/gettext-go.init`
 	if s := testInitCallerName0; s != name {
 		t.Fatalf("expect = %s, got = %s", name, s)
 	}
-	name = `github.com/chai2010/gettext-go/gettext.init`
+	name = `github.com/chai2010/gettext-go.init`
 	if s := testInitCallerName1; s != name {
 		t.Fatalf("expect = %s, got = %s", name, s)
 	}
-	name = `github.com/chai2010/gettext-go/gettext.init`
+	name = `github.com/chai2010/gettext-go.init`
 	if s := testInitCallerName2; s != name {
 		t.Fatalf("expect = %s, got = %s", name, s)
 	}
 
 	// tInit -> gettext.func
-	name = `github.com/chai2010/gettext-go/gettext.func`
+	name = `github.com/chai2010/gettext-go.func`
 	if s := tCaller(0); s != name {
 		t.Fatalf("expect = %s, got = %s", name, s)
 	}
 
 	// caller stack
-	name = `github.com/chai2010/gettext-go/gettext.callerName`
+	name = `github.com/chai2010/gettext-go.callerName`
 	if s := callerName(0); s != name {
 		t.Fatalf("expect = %s, got = %s", name, s)
 	}
-	name = `github.com/chai2010/gettext-go/gettext.TestCallerName`
+	name = `github.com/chai2010/gettext-go.TestCallerName`
 	if s := callerName(1); s != name {
 		t.Fatalf("expect = %s, got = %s", name, s)
 	}
@@ -79,16 +79,16 @@ func TestCallerName(t *testing.T) {
 		case s == "go1.3" || strings.HasPrefix(s, "go1.3."),
 			s == "go1.4" || strings.HasPrefix(s, "go1.4."),
 			s == "go1.5" || strings.HasPrefix(s, "go1.5."):
-			name = `github.com/chai2010/gettext-go/gettext.func`
+			name = `github.com/chai2010/gettext-go.func`
 
 		case s == "go1.10" || strings.HasPrefix(s, "go1.10."),
 			s == "go1.11" || strings.HasPrefix(s, "go1.11."),
 			s == "go1.12" || strings.HasPrefix(s, "go1.12."),
 			s == "go1.13" || strings.HasPrefix(s, "go1.13."):
-			name = `github.com/chai2010/gettext-go/gettext.TestCallerName.func`
+			name = `github.com/chai2010/gettext-go.TestCallerName.func`
 
 		default: // tip
-			name = `github.com/chai2010/gettext-go/gettext.TestCallerName.func`
+			name = `github.com/chai2010/gettext-go.TestCallerName.func`
 		}
 		if s := callerName(1); s != name {
 			t.Fatalf("expect = %s, got = %s", name, s)
@@ -100,16 +100,16 @@ func TestCallerName(t *testing.T) {
 			case s == "go1.3" || strings.HasPrefix(s, "go1.3."),
 				s == "go1.4" || strings.HasPrefix(s, "go1.4."),
 				s == "go1.5" || strings.HasPrefix(s, "go1.5."):
-				name = `github.com/chai2010/gettext-go/gettext.func`
+				name = `github.com/chai2010/gettext-go.func`
 
 			case s == "go1.10" || strings.HasPrefix(s, "go1.10."),
 				s == "go1.11" || strings.HasPrefix(s, "go1.11."),
 				s == "go1.12" || strings.HasPrefix(s, "go1.12."),
 				s == "go1.13" || strings.HasPrefix(s, "go1.13."):
-				name = `github.com/chai2010/gettext-go/gettext.TestCallerName.func`
+				name = `github.com/chai2010/gettext-go.TestCallerName.func`
 
 			default: // tip
-				name = `github.com/chai2010/gettext-go/gettext.TestCallerName.func`
+				name = `github.com/chai2010/gettext-go.TestCallerName.func`
 			}
 			if s := callerName(1); s != name {
 				t.Fatalf("expect = %s, got = %s", name, s)

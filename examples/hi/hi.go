@@ -8,7 +8,7 @@ package hi
 import (
 	"fmt"
 
-	"github.com/chai2010/gettext-go/gettext"
+	"github.com/chai2010/gettext-go"
 )
 
 func SayHi() {
