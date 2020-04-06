@@ -11,7 +11,7 @@ Examples:
 	)
 
 	func main() {
-		moFile, err := mo.Load("test.mo")
+		moFile, err := mo.LoadFile("test.mo")
 		if err != nil {
 			log.Fatal(err)
 		}
