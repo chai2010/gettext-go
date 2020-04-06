@@ -4,9 +4,7 @@
 
 package po
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestDecodePoString(t *testing.T) {
 	if s := decodePoString(poStrEncode); s != poStrDecode {
@@ -17,6 +15,16 @@ func TestDecodePoString(t *testing.T) {
 func TestEncodePoString(t *testing.T) {
 	if s := encodePoString(poStrDecode); s != poStrEncodeStd {
 		t.Fatalf(`expect = %s; got = %s`, poStrEncodeStd, s)
+	}
+}
+
+func TestEncodePoStringMessageN(t *testing.T) {
+	if s := encodePoString(poStrDecodeMessageSingleLine); s != poStrEncodeMessageSingleLine {
+		t.Fatalf(`expect = %s; got = %s`, poStrEncodeMessageSingleLine, s)
+	}
+
+	if multis := encodePoString(poStrDecodeMessageMultiLines); multis != poStrEncodeMessageMultiLines {
+		t.Fatalf(`expect = %s; got = %s`, poStrEncodeMessageMultiLines, multis)
 	}
 }
 
@@ -66,3 +74,13 @@ Plural-Forms: nplurals=1; plural=0;
 X-Generator: Poedit 1.5.5
 TestPoString: abc123
 `
+
+const poStrDecodeMessageSingleLine = `多國語系`
+
+const poStrEncodeMessageSingleLine = `"多國語系"` + "\n"
+
+const poStrDecodeMessageMultiLines = `多國語系
+是處理許多國家的翻譯`
+
+const poStrEncodeMessageMultiLines = `"多國語系\n"` + "\n" +
+	`"是處理許多國家的翻譯"` + "\n"
