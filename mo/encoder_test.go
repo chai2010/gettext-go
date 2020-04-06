@@ -26,7 +26,9 @@ func TestFile_Data(t *testing.T) {
 }
 
 func init() {
-	sort.Sort(byMessages(testMoFile.Messages))
+	sort.Slice(testMoFile.Messages, func(i, j int) bool {
+		return testMoFile.Messages[i].less(&testMoFile.Messages[j])
+	})
 }
 
 var testMoFile = &File{
