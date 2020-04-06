@@ -14,6 +14,38 @@ import (
 	"strings"
 )
 
+type FileSystem interface {
+	LoadMessagesFile(domain, local, ext string) ([]byte, error)
+	LoadResourceFile(domain, local, name string) ([]byte, error)
+	String() string
+}
+
+func LocalFS(root string) FileSystem {
+	return nil
+}
+
+func ZipFS(r *zip.Reader, name string) FileSystem {
+	return newZipFS(r, name)
+}
+
+func NilFS(name string) FileSystem {
+	return &nilFS{name}
+}
+
+type nilFS struct {
+	name string
+}
+
+func (p *nilFS) LoadMessagesFile(domain, local, ext string) ([]byte, error) {
+	return nil, fmt.Errorf("not found")
+}
+func (p *nilFS) LoadResourceFile(domain, local, name string) ([]byte, error) {
+	return nil, fmt.Errorf("not found")
+}
+func (p *nilFS) String() string {
+	return "gettext.nilfs(" + p.name + ")"
+}
+
 type fileSystem struct {
 	FsName    string
 	FsRoot    string
@@ -130,6 +162,14 @@ func (p *fileSystem) LoadResourceFile(domain, local, name string) ([]byte, error
 			return rcData, err
 		}
 		return nil, fmt.Errorf("not found")
+	}
+}
+
+func (p *fileSystem) String() string {
+	if len(p.FsZipData) == 0 {
+		return "gettext.localfs(" + p.FsName + ")"
+	} else {
+		return "gettext.zipfs(" + p.FsName + ")"
 	}
 }
 
