@@ -80,7 +80,7 @@ func Textdomain(domain string) string {
 //		msg := gettext.Gettext("Hello") // msgctxt is "some/package/name.Foo"
 //	}
 func Gettext(msgid string) string {
-	return PGettext(callerName(2), msgid)
+	return PGettext("", msgid)
 }
 
 // Getdata attempt to translate a resource file into the user's native language,
@@ -107,7 +107,7 @@ func Getdata(name string) []byte {
 //		msg := gettext.NGettext("%d people", "%d peoples", 2)
 //	}
 func NGettext(msgid, msgidPlural string, n int) string {
-	return PNGettext(callerName(2), msgid, msgidPlural, n)
+	return PNGettext("", msgid, msgidPlural, n)
 }
 
 // PGettext attempt to translate a text string into the user's native language,
@@ -140,7 +140,7 @@ func PNGettext(msgctxt, msgid, msgidPlural string, n int) string {
 //		msg := gettext.DGettext("poedit", "Hello")
 //	}
 func DGettext(domain, msgid string) string {
-	return DPGettext(domain, callerName(2), msgid)
+	return DPGettext(domain, "", msgid)
 }
 
 // DNGettext like NGettext(), but looking up the message in the specified domain.
@@ -150,7 +150,7 @@ func DGettext(domain, msgid string) string {
 //		msg := gettext.PNGettext("poedit", "gettext-go.example", "%d people", "%d peoples", 2)
 //	}
 func DNGettext(domain, msgid, msgidPlural string, n int) string {
-	return DPNGettext(domain, callerName(2), msgid, msgidPlural, n)
+	return DPNGettext(domain, "", msgid, msgidPlural, n)
 }
 
 // DPGettext like PGettext(), but looking up the message in the specified domain.
