@@ -63,7 +63,9 @@ func (f *File) Data() []byte {
 	// sort the massge as ReferenceFile/ReferenceLine field
 	var messages []Message
 	messages = append(messages, f.Messages...)
-	sort.Sort(byMessages(messages))
+	sort.Slice(messages, func(i, j int) bool {
+		return messages[i].less(&messages[j])
+	})
 
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "%s\n", f.MimeHeader.String())
