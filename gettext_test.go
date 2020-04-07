@@ -152,16 +152,16 @@ var testTexts = []struct {
 	{"default", "github.com/chai2010/gettext-go/examples/hi.SayHi", "pkg hi: Hello, world!", "pkg hi: Hello, world!"},
 
 	// zh_CN
-	{"zh_CN", "main.init", "Gettext in init.", "Init函数中的Gettext."},
-	{"zh_CN", "main.main", "Hello, world!", "你好, 世界!"},
-	{"zh_CN", "main.func", "Gettext in func.", "闭包函数中的Gettext."},
-	{"zh_CN", "github.com/chai2010/gettext-go/examples/hi.SayHi", "pkg hi: Hello, world!", "来自\"Hi\"包的问候: 你好, 世界!"},
+	{"zh_CN", "main.init", "Gettext in init.", "Init函数中的Gettext.(ctx:main.init)"},
+	{"zh_CN", "main.main", "Hello, world!", "你好, 世界!(ctx:main.main)"},
+	{"zh_CN", "main.func", "Gettext in func.", "闭包函数中的Gettext.(ctx:main.func)"},
+	{"zh_CN", "code.google.com/p/gettext-go/examples/hi.SayHi", "pkg hi: Hello, world!", "来自\"Hi\"包的问候: 你好, 世界!(ctx:code.google.com/p/gettext-go/examples/hi.SayHi)"},
 
 	// zh_TW
-	{"zh_TW", "main.init", "Gettext in init.", "Init函數中的Gettext."},
-	{"zh_TW", "main.main", "Hello, world!", "你好, 世界!"},
-	{"zh_TW", "main.func", "Gettext in func.", "閉包函數中的Gettext."},
-	{"zh_TW", "github.com/chai2010/gettext-go/examples/hi.SayHi", "pkg hi: Hello, world!", "來自\"Hi\"包的問候: 你好, 世界!"},
+	{"zh_TW", "main.init", "Gettext in init.", "Init函數中的Gettext.(ctx:main.init)"},
+	{"zh_TW", "main.main", "Hello, world!", "你好, 世界!(ctx:main.main)"},
+	{"zh_TW", "main.func", "Gettext in func.", "閉包函數中的Gettext.(ctx:main.func)"},
+	{"zh_TW", "code.google.com/p/gettext-go/examples/hi.SayHi", "pkg hi: Hello, world!", "來自\"Hi\"包的問候: 你好, 世界!(ctx:code.google.com/p/gettext-go/examples/hi.SayHi)"},
 }
 
 var testResources = []struct {
