@@ -18,18 +18,30 @@ msgstr ""
 "X-Generator: Poedit 1.5.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-msgctxt "main.init"
 msgid "Gettext in init."
 msgstr "Init函數中的Gettext."
 
-msgctxt "main.main"
 msgid "Hello, world!"
 msgstr "你好, 世界!"
 
-msgctxt "main.func"
 msgid "Gettext in func."
 msgstr "閉包函數中的Gettext."
 
-msgctxt "github.com/chai2010/gettext-go/examples/hi.SayHi"
 msgid "pkg hi: Hello, world!"
 msgstr "來自\"Hi\"包的問候: 你好, 世界!"
+
+msgctxt "main.init"
+msgid "Gettext in init."
+msgstr "Init函數中的Gettext.(ctx:main.init)"
+
+msgctxt "main.main"
+msgid "Hello, world!"
+msgstr "你好, 世界!(ctx:main.main)"
+
+msgctxt "main.func"
+msgid "Gettext in func."
+msgstr "閉包函數中的Gettext.(ctx:main.func)"
+
+msgctxt "code.google.com/p/gettext-go/examples/hi.SayHi"
+msgid "pkg hi: Hello, world!"
+msgstr "來自\"Hi\"包的問候: 你好, 世界!(ctx:code.google.com/p/gettext-go/examples/hi.SayHi)"
