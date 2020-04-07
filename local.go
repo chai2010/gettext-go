@@ -46,6 +46,10 @@ func NewLocale(fs FileSystem, locale string) *Locale {
 	}
 }
 
+func (l *Locale) FileSystem() FileSystem {
+	return l.fs
+}
+
 func (l *Locale) GetLocale() string {
 	return ""
 }
