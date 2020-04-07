@@ -32,3 +32,61 @@ func simplifiedLocale(lang string) string {
 	}
 	return strings.TrimSpace(lang)
 }
+
+type Locale struct {
+	fs     FileSystem
+	locale string
+	domain string
+}
+
+func NewLocale(fs FileSystem, locale string) *Locale {
+	return &Locale{
+		fs:     fs,
+		locale: locale,
+	}
+}
+
+func (l *Locale) GetDomain() string {
+	return ""
+}
+func (l *Locale) SetDomain(domain string) {
+	return
+}
+
+func (l *Locale) Getdata(name string) []byte {
+	return nil
+}
+func (l *Locale) DGetdata(domain, name string) []byte {
+	return nil
+}
+
+func (l *Locale) Gettext(msgid string) string {
+	return msgid
+}
+func (l *Locale) DGettext(domain, msgid string) string {
+	return msgid
+}
+
+func (l *Locale) NGettext(msgid, msgidPlural string, n int) string {
+	return msgid
+}
+func (l *Locale) DNGettext(domain, msgid, msgidPlural string, n int) string {
+	return msgid
+}
+
+func (l *Locale) PGettext(msgctxt, msgid string) string {
+	return msgid
+}
+func (l *Locale) DPGettext(domain, msgctxt, msgid string) string {
+	return msgid
+}
+func (l *Locale) DPNGettext(domain, msgctxt, msgid, msgidPlural string, n int) string {
+	return msgid
+}
+func (l *Locale) PNGettext(msgctxt, msgid, msgidPlural string, n int) string {
+	return msgid
+}
+
+func (l *Locale) String() string {
+	return ""
+}
