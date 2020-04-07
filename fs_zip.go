@@ -42,8 +42,26 @@ func (p *zipFS) LocaleList() []string {
 	return locals
 }
 
-func (p *zipFS) LoadMessagesFile(domain, local, ext string) ([]byte, error) {
+func (p *zipFS) DomainList(locale string) []string {
+	var domainMap = make(map[string]string)
+	for _, f := range p.r.File {
+		if strings.HasSuffix(f.Name, ".mo") || strings.HasSuffix(f.Name, ".po") {
+			if strings.Contains(f.Name, locale+"/LC_MESSAGES") {
+				domain := f.Name[strings.LastIndex(f.Name, "/")+1 : strings.LastIndex(f.Name, ".")]
+				domainMap[domain] = domain
+			}
+		}
+	}
 
+	var keys []string
+	for _, s := range domainMap {
+		keys = append(keys, s)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
+func (p *zipFS) LoadMessagesFile(domain, local, ext string) ([]byte, error) {
 	trName := p.makeMessagesFileName(domain, local, ext)
 	for _, f := range p.r.File {
 		if f.Name != trName {

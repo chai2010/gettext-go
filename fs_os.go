@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 )
@@ -51,6 +52,33 @@ func (p *osFS) LocaleList() []string {
 	}
 	sort.Strings(locals)
 	return locals
+}
+func (p *osFS) DomainList(locale string) []string {
+	var domainMap = make(map[string]string)
+	filepath.Walk(p.root, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+
+		fileName := info.Name()
+		if strings.HasSuffix(fileName, ".mo") || strings.HasSuffix(fileName, ".po") {
+			if strings.Contains(fileName, locale+"/LC_MESSAGES") {
+				domain := fileName[strings.LastIndexAny(fileName, `\/`)+1 : strings.LastIndex(fileName, ".")]
+				domainMap[domain] = domain
+			}
+		}
+		return nil
+	})
+
+	var keys []string
+	for _, s := range domainMap {
+		keys = append(keys, s)
+	}
+	sort.Strings(keys)
+	return keys
 }
 
 func (p *osFS) LoadMessagesFile(domain, local, ext string) ([]byte, error) {

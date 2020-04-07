@@ -12,8 +12,9 @@ import (
 
 type FileSystem interface {
 	LocaleList() []string
-	LoadMessagesFile(domain, local, ext string) ([]byte, error)
-	LoadResourceFile(domain, local, name string) ([]byte, error)
+	DomainList(locale string) []string
+	LoadMessagesFile(domain, locale, ext string) ([]byte, error)
+	LoadResourceFile(domain, locale, name string) ([]byte, error)
 	String() string
 }
 
@@ -63,6 +64,10 @@ type nilFS struct {
 func (p *nilFS) LocaleList() []string {
 	return nil
 }
+func (p *nilFS) DomainList(locale string) []string {
+	return nil
+}
+
 func (p *nilFS) LoadMessagesFile(domain, local, ext string) ([]byte, error) {
 	return nil, fmt.Errorf("not found")
 }
