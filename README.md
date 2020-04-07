@@ -4,22 +4,19 @@
 
 ----
 
-gettext-go
-==========
+# gettext-go
 
 - PkgDoc: [http://godoc.org/github.com/chai2010/gettext-go](http://godoc.org/github.com/chai2010/gettext-go)
 - PkgDoc: [http://pkg.go.dev/github.com/chai2010/gettext-go](http://pkg.go.dev/github.com/chai2010/gettext-go)
 
-Install
-========
+## Install
 
 1. `go get github.com/chai2010/gettext-go`
 2. `go run hello.go`
 
 The godoc.org or go.dev has more information.
 
-Example
-=======
+## Example
 
 ```Go
 package main
@@ -57,8 +54,104 @@ func main() {
 
 Go file: [hello.go](https://github.com/chai2010/gettext-go/blob/master/examples/hello.go); PO file: [hello.po](https://github.com/chai2010/gettext-go/blob/master/examples/local/default/LC_MESSAGES/hello.po);
 
-BUGS
-====
+----
+
+## API Changes (v0.1.0 vs v1.0.0)
+
+### Renamed package path
+
+| v0.1.0                                          | v1.0.0                                  |
+| ----------------------------------------------- | --------------------------------------- |
+| `github.com/chai2010/gettext-go/gettext`        | `github.com/chai2010/gettext-go`        |
+| `github.com/chai2010/gettext-go/gettext/po`     | `github.com/chai2010/gettext-go/po`     |
+| `github.com/chai2010/gettext-go/gettext/mo`     | `github.com/chai2010/gettext-go/mo`     |
+| `github.com/chai2010/gettext-go/gettext/plural` | `github.com/chai2010/gettext-go/plural` |
+
+### Renamed function
+
+| v0.1.0                           | v1.0.0                    |
+| -------------------------------- | ------------------------- |
+| `gettext-go/gettext.*`           | `gettext-go.*`            |
+| `gettext-go/gettext/po.Load`     | `gettext-go/po.LoadFile`  |
+| `gettext-go/gettext/po.LoadData` | `gettext-go/po.Load`      |
+| `gettext-go/gettext/mo.Load`     | `gettext-go/mo.LoadFile`  |
+| `gettext-go/gettext/mo.LoadData` | `gettext-go/mo.Load`      |
+
+### Use empty string as the default context for `gettext.Gettext`
+
+```go
+package main
+
+// v0.1.0
+// if the **context** missing, use `callerName(2)` as the context:
+
+func main() {
+	gettext.Gettext("hello")          
+	// => gettext.PGettext("main.main", "hello")
+
+	gettext.DGettext("domain", "hello") 
+	// => gettext.DPGettext("domain", "main.main", "hello")
+
+	gettext.NGettext("domain", "hello", "hello2", n)
+	// => gettext.PNGettext("domain", "main.main", "hello", "hello2", n)
+
+	gettext.DNGettext("domain", "hello", "hello2", n)
+	// => gettext.DPNGettext("domain", "main.main", "hello", "hello2", n)
+}
+```
+
+### `BindTextdomain` support `FileSystem` interface
+
+```go
+// Use FileSystem:
+//	BindTextdomain("poedit", "name", OS("path/to/dir")) // bind "poedit" domain
+//	BindTextdomain("poedit", "name", OS("path/to.zip")) // bind "poedit" domain
+```
+
+### New API in v1.0.0
+
+`FileSystem` interface:
+
+```go
+type FileSystem interface {
+	LocaleList() []string
+	LoadMessagesFile(domain, local, ext string) ([]byte, error)
+	LoadResourceFile(domain, local, name string) ([]byte, error)
+	String() string
+}
+
+func NewFS(name string, x interface{}) FileSystem
+func NilFS(name string) FileSystem
+func OS(root string) FileSystem
+func ZipFS(r *zip.Reader, name string) FileSystem
+```
+
+`DomainManager`:
+
+```go
+type DomainManager struct {
+	// Has unexported fields.
+}
+
+func NewDomainManager() *DomainManager
+func (p *DomainManager) Bind(domain, path string, data interface{}) (domains, paths []string)
+func (p *DomainManager) DGetdata(domain, name string) []byte
+func (p *DomainManager) DPNGettext(domain, msgctxt, msgid, msgidPlural string, n int) string
+func (p *DomainManager) Getdata(name string) []byte
+func (p *DomainManager) PNGettext(msgctxt, msgid, msgidPlural string, n int) string
+func (p *DomainManager) SetDomain(domain string) string
+func (p *DomainManager) SetLocale(locale string) string
+```
+
+And `DefaultManager`:
+
+```go
+var DefaultManager = NewDomainManager()
+```
+
+----
+
+## BUGS
 
 Please report bugs to <chaishushan@gmail.com>.
 
