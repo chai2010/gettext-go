@@ -5,43 +5,16 @@
 package gettext
 
 import (
-	"archive/zip"
-	"bytes"
 	"fmt"
 	"strings"
 )
 
-func (p *domainManager) bindDomainTranslators(domain, path string, fsdata interface{}) {
+func (p *DomainManager) bindDomainTranslators(domain, path string, fsdata interface{}) {
 	if _, ok := p.domainMap[domain]; ok {
 		p.deleteDomain(domain) // delete old domain
 	}
 
-	var fs FileSystem
-	if fsdata != nil {
-		switch x := fsdata.(type) {
-		case []byte:
-			r, err := zip.NewReader(bytes.NewReader(x), int64(len(x)))
-			if err == nil {
-				fs = ZipFS(r, path)
-			} else {
-				fs = NilFS(path)
-			}
-		case string:
-			r, err := zip.NewReader(bytes.NewReader([]byte(x)), int64(len(x)))
-			if err == nil {
-				fs = ZipFS(r, path)
-			} else {
-				fs = NilFS(path)
-			}
-		case FileSystem:
-			fs = x
-		default:
-			fs = OS(path)
-		}
-	} else {
-		fs = OS(path)
-	}
-
+	var fs = NewFS(path, fsdata)
 	for _, locale := range fs.LocaleList() {
 		trMapKey := p.makeTrMapKey(domain, locale)
 		if data, err := fs.LoadMessagesFile(domain, locale, ".mo"); err == nil {
@@ -63,7 +36,7 @@ func (p *domainManager) bindDomainTranslators(domain, path string, fsdata interf
 	p.domainMap[domain] = fs
 }
 
-func (p *domainManager) deleteDomain(domain string) {
+func (p *DomainManager) deleteDomain(domain string) {
 	if _, ok := p.domainMap[domain]; !ok {
 		return
 	}

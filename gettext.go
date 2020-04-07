@@ -5,11 +5,8 @@
 package gettext
 
 var (
-	defaultManager = newDomainManager()
-)
-
-var (
-	DefaultLocale = getDefaultLocale() // use $(LC_MESSAGES) or $(LANG) or "default"
+	DefaultLocale  = getDefaultLocale() // use $(LC_MESSAGES) or $(LANG) or "default"
+	DefaultManager = NewDomainManager()
 )
 
 // SetLocale sets and queries the program's current locale.
@@ -25,7 +22,7 @@ var (
 //	SetLocale("zh_CN") // set locale: return zh_CN
 //	SetLocale("")      // get locale: return zh_CN
 func SetLocale(locale string) string {
-	return defaultManager.SetLocale(locale)
+	return DefaultManager.SetLocale(locale)
 }
 
 // BindTextdomain sets and queries program's domains.
@@ -51,8 +48,12 @@ func SetLocale(locale string) string {
 //	BindTextdomain("poedit", "local.zip", nil)     // bind "poedit" domain
 //	BindTextdomain("poedit", "local.zip", zipData) // bind "poedit" domain
 //
-func BindTextdomain(domain, path string, zipData []byte) (domains, paths []string) {
-	return defaultManager.Bind(domain, path, zipData)
+// Use FileSystem:
+//	BindTextdomain("poedit", "name", OS("path/to/dir")) // bind "poedit" domain
+//	BindTextdomain("poedit", "name", OS("path/to.zip")) // bind "poedit" domain
+//
+func BindTextdomain(domain, path string, data interface{}) (domains, paths []string) {
+	return DefaultManager.Bind(domain, path, data)
 }
 
 // Textdomain sets and retrieves the current message domain.
@@ -67,7 +68,7 @@ func BindTextdomain(domain, path string, zipData []byte) (domains, paths []strin
 //	Textdomain("poedit") // set domain: poedit
 //	Textdomain("")       // get domain: return poedit
 func Textdomain(domain string) string {
-	return defaultManager.SetDomain(domain)
+	return DefaultManager.SetDomain(domain)
 }
 
 // Gettext attempt to translate a text string into the user's native language,
@@ -93,7 +94,7 @@ func Gettext(msgid string) string {
 //		poems := gettext.Getdata("poems.txt")
 //	}
 func Getdata(name string) []byte {
-	return defaultManager.Getdata(name)
+	return DefaultManager.Getdata(name)
 }
 
 // NGettext attempt to translate a text string into the user's native language,
@@ -130,7 +131,7 @@ func PGettext(msgctxt, msgid string) string {
 //		msg := gettext.PNGettext("gettext-go.example", "%d people", "%d peoples", 2)
 //	}
 func PNGettext(msgctxt, msgid, msgidPlural string, n int) string {
-	return defaultManager.PNGettext(msgctxt, msgid, msgidPlural, n)
+	return DefaultManager.PNGettext(msgctxt, msgid, msgidPlural, n)
 }
 
 // DGettext like Gettext(), but looking up the message in the specified domain.
@@ -170,7 +171,7 @@ func DPGettext(domain, msgctxt, msgid string) string {
 //		msg := gettext.DPNGettext("poedit", "gettext-go.example", "%d people", "%d peoples", 2)
 //	}
 func DPNGettext(domain, msgctxt, msgid, msgidPlural string, n int) string {
-	return defaultManager.DPNGettext(domain, msgctxt, msgid, msgidPlural, n)
+	return DefaultManager.DPNGettext(domain, msgctxt, msgid, msgidPlural, n)
 }
 
 // DGetdata like Getdata(), but looking up the resource in the specified domain.
@@ -180,5 +181,5 @@ func DPNGettext(domain, msgctxt, msgid, msgidPlural string, n int) string {
 //		msg := gettext.DGetdata("hello", "poems.txt")
 //	}
 func DGetdata(domain, name string) []byte {
-	return defaultManager.DGetdata(domain, name)
+	return DefaultManager.DGetdata(domain, name)
 }

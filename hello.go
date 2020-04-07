@@ -14,7 +14,7 @@ import (
 
 func main() {
 	gettext.SetLocale("zh_CN")
-	gettext.BindTextdomain("hello", "../examples/local", nil)
+	gettext.BindTextdomain("hello", "./examples/local", nil)
 	gettext.Textdomain("hello")
 
 	fmt.Println(gettext.Gettext("Hello, world!"))

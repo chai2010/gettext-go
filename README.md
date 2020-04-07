@@ -7,7 +7,8 @@
 gettext-go
 ==========
 
-PkgDoc: [http://godoc.org/github.com/chai2010/gettext-go](http://godoc.org/github.com/chai2010/gettext-go)
+- PkgDoc: [http://godoc.org/github.com/chai2010/gettext-go](http://godoc.org/github.com/chai2010/gettext-go)
+- PkgDoc: [http://pkg.go.dev/github.com/chai2010/gettext-go](http://pkg.go.dev/github.com/chai2010/gettext-go)
 
 Install
 ========
@@ -15,7 +16,7 @@ Install
 1. `go get github.com/chai2010/gettext-go`
 2. `go run hello.go`
 
-The godoc.org or gowalker.org has more information.
+The godoc.org or go.dev has more information.
 
 Example
 =======

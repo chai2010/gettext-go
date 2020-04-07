@@ -6,6 +6,7 @@ package gettext
 
 import (
 	"archive/zip"
+	"bytes"
 	"fmt"
 )
 
@@ -14,6 +15,33 @@ type FileSystem interface {
 	LoadMessagesFile(domain, local, ext string) ([]byte, error)
 	LoadResourceFile(domain, local, name string) ([]byte, error)
 	String() string
+}
+
+func NewFS(name string, x interface{}) FileSystem {
+	if x == nil {
+		return OS(name)
+	}
+
+	switch x := x.(type) {
+	case []byte:
+		if len(x) == 0 {
+			return OS(name)
+		}
+		if r, err := zip.NewReader(bytes.NewReader(x), int64(len(x))); err == nil {
+			return ZipFS(r, name)
+		}
+	case string:
+		if len(x) == 0 {
+			return OS(name)
+		}
+		if r, err := zip.NewReader(bytes.NewReader([]byte(x)), int64(len(x))); err == nil {
+			return ZipFS(r, name)
+		}
+	case FileSystem:
+		return x
+	}
+
+	return NilFS(name)
 }
 
 func OS(root string) FileSystem {
