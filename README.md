@@ -67,7 +67,7 @@ Go file: [hello.go](https://github.com/chai2010/gettext-go/blob/master/examples/
 | `github.com/chai2010/gettext-go/gettext/mo`     | `github.com/chai2010/gettext-go/mo`     |
 | `github.com/chai2010/gettext-go/gettext/plural` | `github.com/chai2010/gettext-go/plural` |
 
-### Renamed function
+### Renamed functions
 
 | v0.1.0                           | v1.0.0                    |
 | -------------------------------- | ------------------------- |
@@ -85,18 +85,25 @@ package main
 // v0.1.0
 // if the **context** missing, use `callerName(2)` as the context:
 
+// v1.0.0
+// if the **context** missing, use empty string as the context:
+
 func main() {
 	gettext.Gettext("hello")          
-	// => gettext.PGettext("main.main", "hello")
+	// v0.1.0 => gettext.PGettext("main.main", "hello")
+	// v1.0.0 => gettext.PGettext("", "hello")
 
-	gettext.DGettext("domain", "hello") 
-	// => gettext.DPGettext("domain", "main.main", "hello")
+	gettext.DGettext("domain", "hello")
+	// v0.1.0 => gettext.DPGettext("domain", "main.main", "hello")
+	// v1.0.0 => gettext.DPGettext("domain", "", "hello")
 
 	gettext.NGettext("domain", "hello", "hello2", n)
-	// => gettext.PNGettext("domain", "main.main", "hello", "hello2", n)
+	// v0.1.0 => gettext.PNGettext("domain", "main.main", "hello", "hello2", n)
+	// v1.0.0 => gettext.PNGettext("domain", "", "hello", "hello2", n)
 
 	gettext.DNGettext("domain", "hello", "hello2", n)
-	// => gettext.DPNGettext("domain", "main.main", "hello", "hello2", n)
+	// v0.1.0 => gettext.DPNGettext("domain", "main.main", "hello", "hello2", n)
+	// v1.0.0 => gettext.DPNGettext("domain", "", "hello", "hello2", n)
 }
 ```
 
@@ -126,7 +133,7 @@ func OS(root string) FileSystem
 func ZipFS(r *zip.Reader, name string) FileSystem
 ```
 
-`DomainManager`:
+New `DomainManager` type:
 
 ```go
 type DomainManager struct {
@@ -143,7 +150,7 @@ func (p *DomainManager) SetDomain(domain string) string
 func (p *DomainManager) SetLocale(locale string) string
 ```
 
-And `DefaultManager`:
+And `DefaultManager` variable:
 
 ```go
 var DefaultManager = NewDomainManager()
