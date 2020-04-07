@@ -9,18 +9,20 @@ import (
 )
 
 type domainManager struct {
-	mutex     sync.Mutex
-	locale    string
-	domain    string
-	domainMap map[string]*fileSystem
-	trTextMap map[string]*translator
+	mutex         sync.Mutex
+	locale        string
+	domain        string
+	domainMap     map[string]FileSystem
+	domainPathMap map[string]string
+	trTextMap     map[string]*translator
 }
 
 func newDomainManager() *domainManager {
 	return &domainManager{
-		locale:    DefaultLocale,
-		domainMap: make(map[string]*fileSystem),
-		trTextMap: make(map[string]*translator),
+		locale:        DefaultLocale,
+		domainMap:     make(map[string]FileSystem),
+		domainPathMap: make(map[string]string),
+		trTextMap:     make(map[string]*translator),
 	}
 }
 
@@ -28,21 +30,25 @@ func (p *domainManager) makeTrMapKey(domain, locale string) string {
 	return domain + "_$$$_" + locale
 }
 
-func (p *domainManager) Bind(domain, path string, data []byte) (domains, paths []string) {
+func (p *domainManager) Bind(domain, path string, data interface{}) (domains, paths []string) {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 
 	switch {
 	case domain != "" && path != "": // bind new domain
 		p.bindDomainTranslators(domain, path, data)
+		p.domainPathMap[domain] = path
 	case domain != "" && path == "": // delete domain
 		p.deleteDomain(domain)
+		delete(p.domainPathMap, domain)
 	}
 
 	// return all bind domain
-	for k, fs := range p.domainMap {
+	for k := range p.domainMap {
 		domains = append(domains, k)
-		paths = append(paths, fs.FsName)
+	}
+	for _, s := range domains {
+		paths = append(paths, p.domainPathMap[s])
 	}
 	return
 }
