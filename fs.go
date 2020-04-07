@@ -15,13 +15,14 @@ import (
 )
 
 type FileSystem interface {
+	LocaleList() []string
 	LoadMessagesFile(domain, local, ext string) ([]byte, error)
 	LoadResourceFile(domain, local, name string) ([]byte, error)
 	String() string
 }
 
-func LocalFS(root string) FileSystem {
-	return nil
+func OS(root string) FileSystem {
+	return newOsFS(root)
 }
 
 func ZipFS(r *zip.Reader, name string) FileSystem {
@@ -36,6 +37,9 @@ type nilFS struct {
 	name string
 }
 
+func (p *nilFS) LocaleList() []string {
+	return nil
+}
 func (p *nilFS) LoadMessagesFile(domain, local, ext string) ([]byte, error) {
 	return nil, fmt.Errorf("not found")
 }

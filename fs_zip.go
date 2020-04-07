@@ -8,6 +8,7 @@ import (
 	"archive/zip"
 	"fmt"
 	"io/ioutil"
+	"sort"
 	"strings"
 )
 
@@ -30,6 +31,15 @@ func (p *zipFS) zipName() string {
 	}
 	name = strings.TrimSuffix(name, ".zip")
 	return name
+}
+
+func (p *zipFS) LocaleList() []string {
+	var locals []string
+	for s := range p.lsZip(p.r) {
+		locals = append(locals, s)
+	}
+	sort.Strings(locals)
+	return locals
 }
 
 func (p *zipFS) LoadMessagesFile(domain, local, ext string) ([]byte, error) {
@@ -78,4 +88,31 @@ func (p *zipFS) makeMessagesFileName(domain, local, ext string) string {
 
 func (p *zipFS) makeResourceFileName(domain, local, name string) string {
 	return fmt.Sprintf("%s/%s/LC_RESOURCE/%s/%s", p.root, local, domain, name)
+}
+
+func (p *zipFS) lsZip(r *zip.Reader) map[string]bool {
+	ssMap := make(map[string]bool)
+	for _, f := range r.File {
+		if x := strings.Index(f.Name, "LC_MESSAGES"); x != -1 {
+			s := strings.TrimRight(f.Name[:x], `\/`)
+			if x = strings.LastIndexAny(s, `\/`); x != -1 {
+				s = s[x+1:]
+			}
+			if s != "" {
+				ssMap[s] = true
+			}
+			continue
+		}
+		if x := strings.Index(f.Name, "LC_RESOURCE"); x != -1 {
+			s := strings.TrimRight(f.Name[:x], `\/`)
+			if x = strings.LastIndexAny(s, `\/`); x != -1 {
+				s = s[x+1:]
+			}
+			if s != "" {
+				ssMap[s] = true
+			}
+			continue
+		}
+	}
+	return ssMap
 }
