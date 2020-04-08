@@ -9,10 +9,10 @@ import (
 )
 
 func TestLocale(t *testing.T) {
-	l := NewLocale("hello", "zh_CN", NewFS("./examples/local", nil))
+	l := NewLocale("hello", "./examples/local", nil).SetLang("zh_CN")
 	testLocal_zh_CN(t, l)
 
-	l = NewLocale("hello", "zh_CN", NewFS("./examples/local.zip", nil))
+	l = NewLocale("hello", "./examples/local.zip", nil).SetLang("zh_CN")
 	testLocal_zh_CN(t, l)
 }
 

@@ -103,7 +103,7 @@ func pkg_BindTextdomain(domain, path string, data interface{}) (domains, paths [
 		localMap: make(map[string]*Locale),
 	}
 	for _, lang := range info.fs.LocaleList() {
-		info.localMap[lang] = NewLocale(domain, lang, info.fs)
+		info.localMap[lang] = NewLocale(domain, path, data).SetLang(lang)
 	}
 
 	if domain != "" && pkg.domain == domain {

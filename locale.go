@@ -19,16 +19,13 @@ type Locale struct {
 
 var _ Gettexter = (*Locale)(nil)
 
-func NewLocale(domain, lang string, fs FileSystem) *Locale {
-	if lang == "" {
-		lang = DefaultLang
-	}
+func NewLocale(domain, path string, data interface{}) *Locale {
 	p := &Locale{
-		fs:    fs,
-		lang:  lang,
-		trMap: make(map[string]*translator),
+		fs:     NewFS(path, data),
+		lang:   DefaultLang,
+		domain: domain,
 	}
-	p.SetDomain(domain)
+	p.syncTrMap()
 	return p
 }
 
@@ -37,29 +34,53 @@ func (p *Locale) makeTrMapKey(domain, locale string) string {
 }
 
 func (p *Locale) GetLang() string {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+
 	return p.lang
+}
+func (p *Locale) SetLang(lang string) *Locale {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+
+	if lang == "" {
+		lang = DefaultLang
+	}
+	if lang == p.lang {
+		return p
+	}
+
+	p.lang = lang
+	p.syncTrMap()
+	return p
 }
 
 func (p *Locale) FileSystem() FileSystem {
 	return p.fs
 }
 
-func (p *Locale) SetDomain(domain string) {
+func (p *Locale) SetDomain(domain string) *Locale {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 
 	if domain == "" || domain == p.domain {
-		return
+		return p
 	}
 
 	p.domain = domain
-	trMapKey := p.makeTrMapKey(domain, p.lang)
+	p.syncTrMap()
+	return p
+}
+
+func (p *Locale) syncTrMap() {
+	p.trMap = make(map[string]*translator)
+	trMapKey := p.makeTrMapKey(p.domain, p.lang)
 
 	// try load po file
 	if _, ok := p.trMap[trMapKey]; !ok {
-		if data, err := p.fs.LoadMessagesFile(domain, p.lang, ".po"); err == nil {
+		if data, err := p.fs.LoadMessagesFile(p.domain, p.lang, ".po"); err == nil {
 			p.trMap[trMapKey], _ = newPoTranslator(
-				fmt.Sprintf("%s_%s.po", domain, p.lang),
+				fmt.Sprintf("%s_%s.po", p.domain, p.lang),
 				data,
 			)
 		}
@@ -67,9 +88,9 @@ func (p *Locale) SetDomain(domain string) {
 
 	// try load mo file
 	if _, ok := p.trMap[trMapKey]; !ok {
-		if data, err := p.fs.LoadMessagesFile(domain, p.lang, ".mo"); err == nil {
+		if data, err := p.fs.LoadMessagesFile(p.domain, p.lang, ".mo"); err == nil {
 			p.trMap[trMapKey], _ = newMoTranslator(
-				fmt.Sprintf("%s_%s.mo", domain, p.lang),
+				fmt.Sprintf("%s_%s.mo", p.domain, p.lang),
 				data,
 			)
 		}
