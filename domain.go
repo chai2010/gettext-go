@@ -8,7 +8,9 @@ import (
 	"sync"
 )
 
-type DomainManager struct {
+var defaultManager = newDomainManager()
+
+type _DomainManager struct {
 	mutex         sync.Mutex
 	locale        string
 	domain        string
@@ -17,20 +19,20 @@ type DomainManager struct {
 	trTextMap     map[string]*translator
 }
 
-func NewDomainManager() *DomainManager {
-	return &DomainManager{
-		locale:        DefaultLocale,
+func newDomainManager() *_DomainManager {
+	return &_DomainManager{
+		locale:        DefaultLang,
 		domainMap:     make(map[string]FileSystem),
 		domainPathMap: make(map[string]string),
 		trTextMap:     make(map[string]*translator),
 	}
 }
 
-func (p *DomainManager) makeTrMapKey(domain, locale string) string {
+func (p *_DomainManager) makeTrMapKey(domain, locale string) string {
 	return domain + "_$$$_" + locale
 }
 
-func (p *DomainManager) Bind(domain, path string, data interface{}) (domains, paths []string) {
+func (p *_DomainManager) Bind(domain, path string, data interface{}) (domains, paths []string) {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 
@@ -53,7 +55,7 @@ func (p *DomainManager) Bind(domain, path string, data interface{}) (domains, pa
 	return
 }
 
-func (p *DomainManager) SetLocale(locale string) string {
+func (p *_DomainManager) SetLocale(locale string) string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	if locale != "" {
@@ -62,7 +64,7 @@ func (p *DomainManager) SetLocale(locale string) string {
 	return p.locale
 }
 
-func (p *DomainManager) SetDomain(domain string) string {
+func (p *_DomainManager) SetDomain(domain string) string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	if domain != "" {
@@ -71,27 +73,27 @@ func (p *DomainManager) SetDomain(domain string) string {
 	return p.domain
 }
 
-func (p *DomainManager) Getdata(name string) []byte {
+func (p *_DomainManager) Getdata(name string) []byte {
 	return p.getdata(p.domain, name)
 }
 
-func (p *DomainManager) DGetdata(domain, name string) []byte {
+func (p *_DomainManager) DGetdata(domain, name string) []byte {
 	return p.getdata(domain, name)
 }
 
-func (p *DomainManager) PNGettext(msgctxt, msgid, msgidPlural string, n int) string {
+func (p *_DomainManager) PNGettext(msgctxt, msgid, msgidPlural string, n int) string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	return p.gettext(p.domain, msgctxt, msgid, msgidPlural, n)
 }
 
-func (p *DomainManager) DPNGettext(domain, msgctxt, msgid, msgidPlural string, n int) string {
+func (p *_DomainManager) DPNGettext(domain, msgctxt, msgid, msgidPlural string, n int) string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	return p.gettext(domain, msgctxt, msgid, msgidPlural, n)
 }
 
-func (p *DomainManager) gettext(domain, msgctxt, msgid, msgidPlural string, n int) string {
+func (p *_DomainManager) gettext(domain, msgctxt, msgid, msgidPlural string, n int) string {
 	if p.locale == "" || p.domain == "" {
 		return msgid
 	}
@@ -104,7 +106,7 @@ func (p *DomainManager) gettext(domain, msgctxt, msgid, msgidPlural string, n in
 	return msgid
 }
 
-func (p *DomainManager) getdata(domain, name string) []byte {
+func (p *_DomainManager) getdata(domain, name string) []byte {
 	if p.locale == "" || p.domain == "" {
 		return nil
 	}

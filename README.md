@@ -69,13 +69,14 @@ Go file: [hello.go](https://github.com/chai2010/gettext-go/blob/master/examples/
 
 ### Renamed functions
 
-| v0.1.0                           | v1.0.0                    |
-| -------------------------------- | ------------------------- |
-| `gettext-go/gettext.*`           | `gettext-go.*`            |
-| `gettext-go/gettext/po.Load`     | `gettext-go/po.LoadFile`  |
-| `gettext-go/gettext/po.LoadData` | `gettext-go/po.Load`      |
-| `gettext-go/gettext/mo.Load`     | `gettext-go/mo.LoadFile`  |
-| `gettext-go/gettext/mo.LoadData` | `gettext-go/mo.Load`      |
+| v0.1.0                            | v1.0.0                    |
+| --------------------------------- | ------------------------- |
+| `gettext-go/gettext.*`            | `gettext-go.*`            |
+| `gettext-go/gettext.DefaultLocal` | `gettext-go.DefaultLang`  |
+| `gettext-go/gettext/po.Load`      | `gettext-go/po.LoadFile`  |
+| `gettext-go/gettext/po.LoadData`  | `gettext-go/po.Load`      |
+| `gettext-go/gettext/mo.Load`      | `gettext-go/mo.LoadFile`  |
+| `gettext-go/gettext/mo.LoadData`  | `gettext-go/mo.Load`      |
 
 ### Use empty string as the default context for `gettext.Gettext`
 
@@ -128,26 +129,41 @@ type FileSystem interface {
 }
 
 func NewFS(name string, x interface{}) FileSystem
-func NilFS(name string) FileSystem
 func OS(root string) FileSystem
 func ZipFS(r *zip.Reader, name string) FileSystem
+func NilFS(name string) FileSystem
 ```
 
-New `DomainManager` type:
+`Gettexter` interface:
 
 ```go
-type DomainManager struct {
-	// Has unexported fields.
-}
+type Gettexter interface {
+	Gettext(msgid string) string
+	PGettext(msgctxt, msgid string) string
 
-func NewDomainManager() *DomainManager
-func (p *DomainManager) Bind(domain, path string, data interface{}) (domains, paths []string)
-func (p *DomainManager) DGetdata(domain, name string) []byte
-func (p *DomainManager) DPNGettext(domain, msgctxt, msgid, msgidPlural string, n int) string
-func (p *DomainManager) Getdata(name string) []byte
-func (p *DomainManager) PNGettext(msgctxt, msgid, msgidPlural string, n int) string
-func (p *DomainManager) SetDomain(domain string) string
-func (p *DomainManager) SetLocale(locale string) string
+	NGettext(msgid, msgidPlural string, n int) string
+	PNGettext(msgctxt, msgid, msgidPlural string, n int) string
+
+	DGettext(domain, msgid string) string
+	DPGettext(domain, msgctxt, msgid string) string
+	DNGettext(domain, msgid, msgidPlural string, n int) string
+	DPNGettext(domain, msgctxt, msgid, msgidPlural string, n int) string
+
+	Getdata(name string) []byte
+	DGetdata(domain, name string) []byte
+}
+```
+
+```go
+type Locale struct {}
+
+var _ Gettexter = (*Locale)(nil)
+
+func NewLocale(domain, lang string, fs FileSystem) *Locale
+func (p *Locale) FileSystem() FileSystem
+func (p *Locale) GetDomain() string
+func (p *Locale) GetLang() string
+func (p *Locale) SetDomain(domain string)
 ```
 
 And `DefaultManager` variable:

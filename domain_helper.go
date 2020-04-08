@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func (p *DomainManager) bindDomainTranslators(domain, path string, fsdata interface{}) {
+func (p *_DomainManager) bindDomainTranslators(domain, path string, fsdata interface{}) {
 	if _, ok := p.domainMap[domain]; ok {
 		p.deleteDomain(domain) // delete old domain
 	}
@@ -36,7 +36,7 @@ func (p *DomainManager) bindDomainTranslators(domain, path string, fsdata interf
 	p.domainMap[domain] = fs
 }
 
-func (p *DomainManager) deleteDomain(domain string) {
+func (p *_DomainManager) deleteDomain(domain string) {
 	if _, ok := p.domainMap[domain]; !ok {
 		return
 	}

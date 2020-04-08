@@ -12,9 +12,9 @@ import (
 
 type FileSystem interface {
 	LocaleList() []string
-	DomainList(locale string) []string
-	LoadMessagesFile(domain, locale, ext string) ([]byte, error)
-	LoadResourceFile(domain, locale, name string) ([]byte, error)
+	DomainList(lang string) []string
+	LoadMessagesFile(domain, lang, ext string) ([]byte, error)
+	LoadResourceFile(domain, lang, name string) ([]byte, error)
 	String() string
 }
 
