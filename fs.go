@@ -12,7 +12,6 @@ import (
 
 type FileSystem interface {
 	LocaleList() []string
-	DomainList(lang string) []string
 	LoadMessagesFile(domain, lang, ext string) ([]byte, error)
 	LoadResourceFile(domain, lang, name string) ([]byte, error)
 	String() string

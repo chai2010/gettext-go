@@ -29,7 +29,7 @@ Example:
 		// Output: ...
 	}
 
-Translate directory struct("../examples/local.zip"):
+Translate directory struct("./examples/local.zip"):
 
 	Root: "path" or "file.zip/zipBaseName"
 	 +-default                 # local: $(LC_MESSAGES) or $(LANG) or "default"
