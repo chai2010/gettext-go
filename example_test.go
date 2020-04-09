@@ -50,3 +50,22 @@ func Example_bind() {
 	// Output:
 	// 你好, 世界!
 }
+
+func Example_multiLang() {
+	zh := gettext.New("hello", "./examples/locale").SetLanguage("zh_CN")
+	tw := gettext.New("hello", "./examples/locale").SetLanguage("zh_TW")
+
+	fmt.Println(zh.PGettext(
+		"code.google.com/p/gettext-go/examples/hi.SayHi",
+		"pkg hi: Hello, world!",
+	))
+
+	fmt.Println(tw.PGettext(
+		"code.google.com/p/gettext-go/examples/hi.SayHi",
+		"pkg hi: Hello, world!",
+	))
+
+	// Output:
+	// 来自"Hi"包的问候: 你好, 世界!(ctx:code.google.com/p/gettext-go/examples/hi.SayHi)
+	// 來自"Hi"包的問候: 你好, 世界!(ctx:code.google.com/p/gettext-go/examples/hi.SayHi)
+}
