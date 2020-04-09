@@ -4,7 +4,7 @@
 
 ----
 
-# gettext-go
+# gettext-go: GNU gettext for Go ([Imported By Kubernetes](https://pkg.go.dev/github.com/chai2010/gettext-go@v0.1.0/gettext?tab=importedby))
 
 - PkgDoc: [http://godoc.org/github.com/chai2010/gettext-go](http://godoc.org/github.com/chai2010/gettext-go)
 - PkgDoc: [http://pkg.go.dev/github.com/chai2010/gettext-go](http://pkg.go.dev/github.com/chai2010/gettext-go)
