@@ -16,7 +16,7 @@
 
 The godoc.org or go.dev has more information.
 
-## Example
+## Examples
 
 ```Go
 package main
@@ -28,14 +28,29 @@ import (
 )
 
 func main() {
-	gettext.SetLocale("zh_CN")
-	gettext.Textdomain("hello")
+	gettext := gettext.New("hello", "./examples/locale").SetLanguage("zh_CN")
+	fmt.Println(gettext.Gettext("Hello, world!"))
 
-	gettext.BindTextdomain("hello", "local", nil)
+	// Output: 你好, 世界!
+}
+```
 
-	// gettext.BindTextdomain("hello", "local", nil)         // from local dir
-	// gettext.BindTextdomain("hello", "local.zip", nil)     // from local zip file
-	// gettext.BindTextdomain("hello", "local.zip", zipData) // from embedded zip data
+```Go
+package main
+
+import (
+	"fmt"
+
+	"github.com/chai2010/gettext-go"
+)
+
+func main() {
+	gettext.SetLanguage("zh_CN")
+	gettext.BindLocale(gettext.New("hello", "locale"))
+
+	// gettext.BindLocale("hello", "locale")              // from locale dir
+	// gettext.BindLocale("hello", "locale.zip")          // from locale zip file
+	// gettext.BindLocale("hello", "locale.zip", zipData) // from embedded zip data
 
 	// translate source text
 	fmt.Println(gettext.Gettext("Hello, world!"))
@@ -52,7 +67,7 @@ func main() {
 }
 ```
 
-Go file: [hello.go](https://github.com/chai2010/gettext-go/blob/master/examples/hello.go); PO file: [hello.po](https://github.com/chai2010/gettext-go/blob/master/examples/local/default/LC_MESSAGES/hello.po);
+Go file: [hello.go](https://github.com/chai2010/gettext-go/blob/master/examples/hello.go); PO file: [hello.po](https://github.com/chai2010/gettext-go/blob/master/examples/locale/default/LC_MESSAGES/hello.po);
 
 ----
 
@@ -60,7 +75,7 @@ Go file: [hello.go](https://github.com/chai2010/gettext-go/blob/master/examples/
 
 ### Renamed package path
 
-| v0.1.0                                          | v1.0.0                                  |
+| v0.1.0 (old)                                    | v1.0.0 (new)                            |
 | ----------------------------------------------- | --------------------------------------- |
 | `github.com/chai2010/gettext-go/gettext`        | `github.com/chai2010/gettext-go`        |
 | `github.com/chai2010/gettext-go/gettext/po`     | `github.com/chai2010/gettext-go/po`     |
@@ -69,14 +84,17 @@ Go file: [hello.go](https://github.com/chai2010/gettext-go/blob/master/examples/
 
 ### Renamed functions
 
-| v0.1.0                            | v1.0.0                    |
-| --------------------------------- | ------------------------- |
-| `gettext-go/gettext.*`            | `gettext-go.*`            |
-| `gettext-go/gettext.DefaultLocal` | `gettext-go.DefaultLang`  |
-| `gettext-go/gettext/po.Load`      | `gettext-go/po.LoadFile`  |
-| `gettext-go/gettext/po.LoadData`  | `gettext-go/po.Load`      |
-| `gettext-go/gettext/mo.Load`      | `gettext-go/mo.LoadFile`  |
-| `gettext-go/gettext/mo.LoadData`  | `gettext-go/mo.Load`      |
+| v0.1.0 (old)                       | v1.0.0 (new)                |
+| ---------------------------------- | --------------------------- |
+| `gettext-go/gettext.*`             | `gettext-go.*`              |
+| `gettext-go/gettext.DefaultLocal`  | `gettext-go.DefaultLanguage`|
+| `gettext-go/gettext.BindTextdomain`| `gettext-go.BindLocale`     |
+| `gettext-go/gettext.Textdomain`    | `gettext-go.SetDomain`      |
+| `gettext-go/gettext.SetLocale`     | `gettext-go.SetLanguage`    |
+| `gettext-go/gettext/po.Load`       | `gettext-go/po.LoadFile`    |
+| `gettext-go/gettext/po.LoadData`   | `gettext-go/po.Load`        |
+| `gettext-go/gettext/mo.Load`       | `gettext-go/mo.LoadFile`    |
+| `gettext-go/gettext/mo.LoadData`   | `gettext-go/mo.Load`        |
 
 ### Use empty string as the default context for `gettext.Gettext`
 
@@ -108,36 +126,28 @@ func main() {
 }
 ```
 
-### `BindTextdomain` support `FileSystem` interface
+### `BindLocale` support `FileSystem` interface
 
 ```go
 // Use FileSystem:
-//	BindTextdomain("poedit", "name", OS("path/to/dir")) // bind "poedit" domain
-//	BindTextdomain("poedit", "name", OS("path/to.zip")) // bind "poedit" domain
+//	BindLocale(New("poedit", "name", OS("path/to/dir"))) // bind "poedit" domain
+//	BindLocale(New("poedit", "name", OS("path/to.zip"))) // bind "poedit" domain
 ```
 
-### New API in v1.0.0
-
-`FileSystem` interface:
-
-```go
-type FileSystem interface {
-	LocaleList() []string
-	LoadMessagesFile(domain, local, ext string) ([]byte, error)
-	LoadResourceFile(domain, local, name string) ([]byte, error)
-	String() string
-}
-
-func NewFS(name string, x interface{}) FileSystem
-func OS(root string) FileSystem
-func ZipFS(r *zip.Reader, name string) FileSystem
-func NilFS(name string) FileSystem
-```
+## New API in v1.0.0
 
 `Gettexter` interface:
 
 ```go
 type Gettexter interface {
+	FileSystem() FileSystem
+
+	GetDomain() string
+	SetDomain(domain string) Gettexter
+
+	GetLanguage() string
+	SetLanguage(lang string) Gettexter
+
 	Gettext(msgid string) string
 	PGettext(msgctxt, msgid string) string
 
@@ -152,24 +162,24 @@ type Gettexter interface {
 	Getdata(name string) []byte
 	DGetdata(domain, name string) []byte
 }
+
+func New(domain, path string, data ...interface{}) Gettexter
 ```
 
-```go
-type Locale struct {}
-
-var _ Gettexter = (*Locale)(nil)
-
-func NewLocale(domain, lang string, fs FileSystem) *Locale
-func (p *Locale) FileSystem() FileSystem
-func (p *Locale) GetDomain() string
-func (p *Locale) GetLang() string
-func (p *Locale) SetDomain(domain string)
-```
-
-And `DefaultManager` variable:
+`FileSystem` interface:
 
 ```go
-var DefaultManager = NewDomainManager()
+type FileSystem interface {
+	LocaleList() []string
+	LoadMessagesFile(domain, lang, ext string) ([]byte, error)
+	LoadResourceFile(domain, lang, name string) ([]byte, error)
+	String() string
+}
+
+func NewFS(name string, x interface{}) FileSystem
+func OS(root string) FileSystem
+func ZipFS(r *zip.Reader, name string) FileSystem
+func NilFS(name string) FileSystem
 ```
 
 ----

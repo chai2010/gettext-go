@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 )
@@ -20,7 +19,7 @@ type osFS struct {
 }
 
 func newOsFS(root string) FileSystem {
-	// local zip file
+	// locale zip file
 	if fi, err := os.Stat(root); err == nil && !fi.IsDir() {
 		if strings.HasSuffix(strings.ToLower(root), ".zip") {
 			if x, err := ioutil.ReadFile(root); err == nil {
@@ -31,7 +30,7 @@ func newOsFS(root string) FileSystem {
 		}
 	}
 
-	// local dir
+	// locale dir
 	return &osFS{root: root}
 }
 
@@ -46,43 +45,16 @@ func (p *osFS) LocaleList() []string {
 			ssMap[dir.Name()] = true
 		}
 	}
-	var locals = make([]string, 0, len(ssMap))
+	var locales = make([]string, 0, len(ssMap))
 	for s := range ssMap {
-		locals = append(locals, s)
+		locales = append(locales, s)
 	}
-	sort.Strings(locals)
-	return locals
-}
-func (p *osFS) DomainList(locale string) []string {
-	var domainMap = make(map[string]string)
-	filepath.Walk(p.root, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if info.IsDir() {
-			return nil
-		}
-
-		fileName := info.Name()
-		if strings.HasSuffix(fileName, ".mo") || strings.HasSuffix(fileName, ".po") {
-			if strings.Contains(fileName, locale+"/LC_MESSAGES") {
-				domain := fileName[strings.LastIndexAny(fileName, `\/`)+1 : strings.LastIndex(fileName, ".")]
-				domainMap[domain] = domain
-			}
-		}
-		return nil
-	})
-
-	var keys []string
-	for _, s := range domainMap {
-		keys = append(keys, s)
-	}
-	sort.Strings(keys)
-	return keys
+	sort.Strings(locales)
+	return locales
 }
 
-func (p *osFS) LoadMessagesFile(domain, local, ext string) ([]byte, error) {
-	trName := p.makeMessagesFileName(domain, local, ext)
+func (p *osFS) LoadMessagesFile(domain, locale, ext string) ([]byte, error) {
+	trName := p.makeMessagesFileName(domain, locale, ext)
 	rcData, err := ioutil.ReadFile(trName)
 	if err != nil {
 		return nil, err
@@ -90,8 +62,8 @@ func (p *osFS) LoadMessagesFile(domain, local, ext string) ([]byte, error) {
 	return rcData, nil
 }
 
-func (p *osFS) LoadResourceFile(domain, local, name string) ([]byte, error) {
-	rcName := p.makeResourceFileName(domain, local, name)
+func (p *osFS) LoadResourceFile(domain, locale, name string) ([]byte, error) {
+	rcName := p.makeResourceFileName(domain, locale, name)
 	rcData, err := ioutil.ReadFile(rcName)
 	if err != nil {
 		return nil, err
@@ -103,10 +75,10 @@ func (p *osFS) String() string {
 	return "gettext.localfs(" + p.root + ")"
 }
 
-func (p *osFS) makeMessagesFileName(domain, local, ext string) string {
-	return fmt.Sprintf("%s/%s/LC_MESSAGES/%s%s", p.root, local, domain, ext)
+func (p *osFS) makeMessagesFileName(domain, lang, ext string) string {
+	return fmt.Sprintf("%s/%s/LC_MESSAGES/%s%s", p.root, lang, domain, ext)
 }
 
-func (p *osFS) makeResourceFileName(domain, local, name string) string {
-	return fmt.Sprintf("%s/%s/LC_RESOURCE/%s/%s", p.root, local, domain, name)
+func (p *osFS) makeResourceFileName(domain, lang, name string) string {
+	return fmt.Sprintf("%s/%s/LC_RESOURCE/%s/%s", p.root, lang, domain, name)
 }

@@ -11,59 +11,59 @@ import (
 )
 
 var testZipData = func() []byte {
-	if data, err := ioutil.ReadFile("./examples/local.zip"); err == nil {
+	if data, err := ioutil.ReadFile("./examples/locale.zip"); err == nil {
 		return data
 	}
 	return nil
 }()
 
 func TestGettext(t *testing.T) {
-	Textdomain("hello")
+	SetDomain("hello")
 
-	// local file system
-	BindTextdomain("hello", "./examples/local", nil)
+	// locale file system
+	BindLocale(New("hello", "./examples/locale"))
 	testGettext(t, true)
-	BindTextdomain("hello", "", nil)
+	BindLocale(New("hello", "", nil))
 	testGettext(t, false)
 
-	// local zip file system
-	BindTextdomain("hello", "./examples/local.zip", nil)
+	// locale zip file system
+	BindLocale(New("hello", "./examples/locale.zip", nil))
 	testGettext(t, true)
-	BindTextdomain("hello", "", nil)
+	BindLocale(New("hello", "", nil))
 	testGettext(t, false)
 
 	// embedded zip file system
-	BindTextdomain("hello", "local.zip", testZipData)
+	BindLocale(New("hello", "locale.zip", testZipData))
 	testGettext(t, true)
-	BindTextdomain("hello", "", nil)
+	BindLocale(New("hello", "", nil))
 	testGettext(t, false)
 }
 
 func TestGetdata(t *testing.T) {
-	Textdomain("hello")
+	SetDomain("hello")
 
-	// local file system
-	BindTextdomain("hello", "./examples/local", nil)
+	// locale file system
+	BindLocale(New("hello", "./examples/locale", nil))
 	testGetdata(t, true)
-	BindTextdomain("hello", "", nil)
+	BindLocale(New("hello", "", nil))
 	testGetdata(t, false)
 
-	// local zip file system
-	BindTextdomain("hello", "./examples/local.zip", nil)
+	// locale zip file system
+	BindLocale(New("hello", "./examples/locale.zip", nil))
 	testGetdata(t, true)
-	BindTextdomain("hello", "", nil)
+	BindLocale(New("hello", "", nil))
 	testGetdata(t, false)
 
 	// embedded zip file system
-	BindTextdomain("hello", "local.zip", testZipData)
+	BindLocale(New("hello", "locale.zip", testZipData))
 	testGetdata(t, true)
-	BindTextdomain("hello", "", nil)
+	BindLocale(New("hello", "", nil))
 	testGetdata(t, false)
 }
 
 func testGettext(t *testing.T, hasTransle bool) {
 	for i, v := range testTexts {
-		if lang := SetLocale(v.lang); lang != v.lang {
+		if lang := SetLanguage(v.lang); lang != v.lang {
 			t.Fatalf("%d: expect = %s, got = %v", i, v.lang, lang)
 		}
 		if hasTransle {
@@ -80,7 +80,7 @@ func testGettext(t *testing.T, hasTransle bool) {
 
 func testGetdata(t *testing.T, hasTransle bool) {
 	for i, v := range testResources {
-		if lang := SetLocale(v.lang); lang != v.lang {
+		if lang := SetLanguage(v.lang); lang != v.lang {
 			t.Fatalf("%d: expect = %s, got = %v", i, v.lang, lang)
 		}
 		if hasTransle {
@@ -98,9 +98,9 @@ func testGetdata(t *testing.T, hasTransle bool) {
 }
 
 func BenchmarkGettext(b *testing.B) {
-	SetLocale("zh_CN")
-	BindTextdomain("hello", "./examples/local", nil)
-	Textdomain("hello")
+	SetLanguage("zh_CN")
+	BindLocale(New("hello", "./examples/locale", nil))
+	SetDomain("hello")
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -108,9 +108,9 @@ func BenchmarkGettext(b *testing.B) {
 	}
 }
 func BenchmarkGettext_Zip(b *testing.B) {
-	SetLocale("zh_CN")
-	BindTextdomain("hello", "./examples/local.zip", nil)
-	Textdomain("hello")
+	SetLanguage("zh_CN")
+	BindLocale(New("hello", "./examples/locale.zip", nil))
+	SetDomain("hello")
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -119,9 +119,9 @@ func BenchmarkGettext_Zip(b *testing.B) {
 }
 
 func BenchmarkGetdata(b *testing.B) {
-	SetLocale("zh_CN")
-	BindTextdomain("hello", "./examples/local", nil)
-	Textdomain("hello")
+	SetLanguage("zh_CN")
+	BindLocale(New("hello", "./examples/locale", nil))
+	SetDomain("hello")
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -129,9 +129,9 @@ func BenchmarkGetdata(b *testing.B) {
 	}
 }
 func BenchmarkGetdata_Zip(b *testing.B) {
-	SetLocale("zh_CN")
-	BindTextdomain("hello", "./examples/local.zip", nil)
-	Textdomain("hello")
+	SetLanguage("zh_CN")
+	BindLocale(New("hello", "./examples/locale.zip", nil))
+	SetDomain("hello")
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

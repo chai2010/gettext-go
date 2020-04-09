@@ -19,7 +19,10 @@ type FileSystem interface {
 
 func NewFS(name string, x interface{}) FileSystem {
 	if x == nil {
-		return OS(name)
+		if name != "" {
+			return OS(name)
+		}
+		return NilFS(name)
 	}
 
 	switch x := x.(type) {
@@ -67,10 +70,10 @@ func (p *nilFS) DomainList(locale string) []string {
 	return nil
 }
 
-func (p *nilFS) LoadMessagesFile(domain, local, ext string) ([]byte, error) {
+func (p *nilFS) LoadMessagesFile(domain, lang, ext string) ([]byte, error) {
 	return nil, fmt.Errorf("not found")
 }
-func (p *nilFS) LoadResourceFile(domain, local, name string) ([]byte, error) {
+func (p *nilFS) LoadResourceFile(domain, lang, name string) ([]byte, error) {
 	return nil, fmt.Errorf("not found")
 }
 func (p *nilFS) String() string {

@@ -4,7 +4,19 @@
 
 package gettext
 
+var (
+	DefaultLanguage string = getDefaultLanguage() // use $(LC_MESSAGES) or $(LANG) or "default"
+)
+
 type Gettexter interface {
+	FileSystem() FileSystem
+
+	GetDomain() string
+	SetDomain(domain string) Gettexter
+
+	GetLanguage() string
+	SetLanguage(lang string) Gettexter
+
 	Gettext(msgid string) string
 	PGettext(msgctxt, msgid string) string
 
@@ -20,61 +32,64 @@ type Gettexter interface {
 	DGetdata(domain, name string) []byte
 }
 
-var debug = false
+// New create Interface use default language.
+func New(domain, path string, data ...interface{}) Gettexter {
+	return newLocale(domain, path, data...)
+}
 
-// SetLocale sets and queries the program's current lang.
+var defaultGettexter struct {
+	lang   string
+	domain string
+	Gettexter
+}
+
+func init() {
+	defaultGettexter.lang = getDefaultLanguage()
+	defaultGettexter.domain = "default"
+	defaultGettexter.Gettexter = newLocale("", "")
+}
+
+// BindLocale sets and queries program's domains.
 //
-// If the lang is not empty string, set the new local.
+// Examples:
+//	BindLocale(New("poedit", "locale")) // bind "poedit" domain
+//
+// Use zip file:
+//	BindLocale(New("poedit", "locale.zip"))          // bind "poedit" domain
+//	BindLocale(New("poedit", "locale.zip", zipData)) // bind "poedit" domain
+//
+// Use FileSystem:
+//	BindLocale(New("poedit", "name", OS("path/to/dir"))) // bind "poedit" domain
+//	BindLocale(New("poedit", "name", OS("path/to.zip"))) // bind "poedit" domain
+//
+func BindLocale(g Gettexter) {
+	if g != nil {
+		defaultGettexter.Gettexter = g
+		defaultGettexter.SetLanguage(defaultGettexter.lang)
+	} else {
+		defaultGettexter.Gettexter = newLocale("", "")
+		defaultGettexter.SetLanguage(defaultGettexter.lang)
+	}
+}
+
+// SetLanguage sets and queries the program's current lang.
+//
+// If the lang is not empty string, set the new locale.
 //
 // If the lang is empty string, don't change anything.
 //
 // Returns is the current locale.
 //
 // Examples:
-//	SetLocale("")      // get locale: return DefaultLocale
-//	SetLocale("zh_CN") // set locale: return zh_CN
-//	SetLocale("")      // get locale: return zh_CN
-func SetLocale(lang string) string {
-	if !debug {
-		return defaultManager.SetLocale(lang)
-	}
-	return pkg_SetLocale(lang)
+//	SetLanguage("")      // get locale: return DefaultLocale
+//	SetLanguage("zh_CN") // set locale: return zh_CN
+//	SetLanguage("")      // get locale: return zh_CN
+func SetLanguage(lang string) string {
+	defaultGettexter.SetLanguage(lang)
+	return defaultGettexter.GetLanguage()
 }
 
-// BindTextdomain sets and queries program's domains.
-//
-// If the domain and path are all not empty string, bind the new domain.
-// If the domain already exists, return error.
-//
-// If the domain is not empty string, but the path is the empty string,
-// delete the domain.
-// If the domain don't exists, return error.
-//
-// If the domain and the path are all empty string, don't change anything.
-// Returns is the all bind domains.
-//
-// Examples:
-//	BindTextdomain("poedit", "local", nil) // bind "poedit" domain
-//	BindTextdomain("", "", nil)            // return all domains
-//	BindTextdomain("poedit", "", nil)      // delete "poedit" domain
-//	BindTextdomain("", "", nil)            // return all domains
-//
-// Use zip file:
-//	BindTextdomain("poedit", "local.zip", nil)     // bind "poedit" domain
-//	BindTextdomain("poedit", "local.zip", zipData) // bind "poedit" domain
-//
-// Use FileSystem:
-//	BindTextdomain("poedit", "name", OS("path/to/dir")) // bind "poedit" domain
-//	BindTextdomain("poedit", "name", OS("path/to.zip")) // bind "poedit" domain
-//
-func BindTextdomain(domain, path string, data interface{}) (domains, paths []string) {
-	if !debug {
-		return defaultManager.Bind(domain, path, data)
-	}
-	return pkg_BindTextdomain(domain, path, data)
-}
-
-// Textdomain sets and retrieves the current message domain.
+// SetDomain sets and retrieves the current message domain.
 //
 // If the domain is not empty string, set the new domains.
 //
@@ -83,13 +98,11 @@ func BindTextdomain(domain, path string, data interface{}) (domains, paths []str
 // Returns is the all used domains.
 //
 // Examples:
-//	Textdomain("poedit") // set domain: poedit
-//	Textdomain("")       // get domain: return poedit
-func Textdomain(domain string) string {
-	if !debug {
-		return defaultManager.SetDomain(domain)
-	}
-	return pkg_SetDomain(domain)
+//	SetDomain("poedit") // set domain: poedit
+//	SetDomain("")       // get domain: return poedit
+func SetDomain(domain string) string {
+	defaultGettexter.SetDomain(domain)
+	return defaultGettexter.GetDomain()
 }
 
 // Gettext attempt to translate a text string into the user's native language,
@@ -99,13 +112,10 @@ func Textdomain(domain string) string {
 //
 // Examples:
 //	func Foo() {
-//		msg := gettext.Gettext("Hello") // msgctxt is "some/package/name.Foo"
+//		msg := gettext.Gettext("Hello") // msgctxt is ""
 //	}
 func Gettext(msgid string) string {
-	if !debug {
-		return PGettext("", msgid)
-	}
-	return pkg_Gettext(msgid)
+	return defaultGettexter.Gettext(msgid)
 }
 
 // Getdata attempt to translate a resource file into the user's native language,
@@ -114,14 +124,11 @@ func Gettext(msgid string) string {
 // Examples:
 //	func Foo() {
 //		Textdomain("hello")
-//		BindTextdomain("hello", "local.zip", nilOrZipData)
+//		BindLocale("hello", "locale.zip", nilOrZipData)
 //		poems := gettext.Getdata("poems.txt")
 //	}
 func Getdata(name string) []byte {
-	if !debug {
-		return defaultManager.Getdata(name)
-	}
-	return pkg_Getdata(name)
+	return defaultGettexter.Getdata(name)
 }
 
 // NGettext attempt to translate a text string into the user's native language,
@@ -135,10 +142,7 @@ func Getdata(name string) []byte {
 //		msg := gettext.NGettext("%d people", "%d peoples", 2)
 //	}
 func NGettext(msgid, msgidPlural string, n int) string {
-	if !debug {
-		return PNGettext("", msgid, msgidPlural, n)
-	}
-	return pkg_NGettext(msgid, msgidPlural, n)
+	return defaultGettexter.NGettext(msgid, msgidPlural, n)
 }
 
 // PGettext attempt to translate a text string into the user's native language,
@@ -149,10 +153,7 @@ func NGettext(msgid, msgidPlural string, n int) string {
 //		msg := gettext.PGettext("gettext-go.example", "Hello") // msgctxt is "gettext-go.example"
 //	}
 func PGettext(msgctxt, msgid string) string {
-	if !debug {
-		return PNGettext(msgctxt, msgid, "", 0)
-	}
-	return pkg_PGettext(msgctxt, msgid)
+	return defaultGettexter.PGettext(msgctxt, msgid)
 }
 
 // PNGettext attempt to translate a text string into the user's native language,
@@ -164,10 +165,7 @@ func PGettext(msgctxt, msgid string) string {
 //		msg := gettext.PNGettext("gettext-go.example", "%d people", "%d peoples", 2)
 //	}
 func PNGettext(msgctxt, msgid, msgidPlural string, n int) string {
-	if !debug {
-		return defaultManager.PNGettext(msgctxt, msgid, msgidPlural, n)
-	}
-	return pkg_PNGettext(msgctxt, msgid, msgidPlural, n)
+	return defaultGettexter.PNGettext(msgctxt, msgid, msgidPlural, n)
 }
 
 // DGettext like Gettext(), but looking up the message in the specified domain.
@@ -177,10 +175,7 @@ func PNGettext(msgctxt, msgid, msgidPlural string, n int) string {
 //		msg := gettext.DGettext("poedit", "Hello")
 //	}
 func DGettext(domain, msgid string) string {
-	if !debug {
-		return DPGettext(domain, "", msgid)
-	}
-	return pkg_DGettext(domain, msgid)
+	return defaultGettexter.DGettext(domain, msgid)
 }
 
 // DNGettext like NGettext(), but looking up the message in the specified domain.
@@ -190,10 +185,7 @@ func DGettext(domain, msgid string) string {
 //		msg := gettext.PNGettext("poedit", "gettext-go.example", "%d people", "%d peoples", 2)
 //	}
 func DNGettext(domain, msgid, msgidPlural string, n int) string {
-	if !debug {
-		return DPNGettext(domain, "", msgid, msgidPlural, n)
-	}
-	return pkg_DNGettext(domain, msgid, msgidPlural, n)
+	return defaultGettexter.DNGettext(domain, msgid, msgidPlural, n)
 }
 
 // DPGettext like PGettext(), but looking up the message in the specified domain.
@@ -203,10 +195,7 @@ func DNGettext(domain, msgid, msgidPlural string, n int) string {
 //		msg := gettext.DPGettext("poedit", "gettext-go.example", "Hello")
 //	}
 func DPGettext(domain, msgctxt, msgid string) string {
-	if !debug {
-		return DPNGettext(domain, msgctxt, msgid, "", 0)
-	}
-	return pkg_DPGettext(domain, msgctxt, msgid)
+	return defaultGettexter.DPGettext(domain, msgctxt, msgid)
 }
 
 // DPNGettext like PNGettext(), but looking up the message in the specified domain.
@@ -216,10 +205,7 @@ func DPGettext(domain, msgctxt, msgid string) string {
 //		msg := gettext.DPNGettext("poedit", "gettext-go.example", "%d people", "%d peoples", 2)
 //	}
 func DPNGettext(domain, msgctxt, msgid, msgidPlural string, n int) string {
-	if !debug {
-		return defaultManager.DPNGettext(domain, msgctxt, msgid, msgidPlural, n)
-	}
-	return pkg_DPNGettext(domain, msgctxt, msgid, msgidPlural, n)
+	return defaultGettexter.DPNGettext(domain, msgctxt, msgid, msgidPlural, n)
 }
 
 // DGetdata like Getdata(), but looking up the resource in the specified domain.
@@ -229,8 +215,5 @@ func DPNGettext(domain, msgctxt, msgid, msgidPlural string, n int) string {
 //		msg := gettext.DGetdata("hello", "poems.txt")
 //	}
 func DGetdata(domain, name string) []byte {
-	if !debug {
-		return defaultManager.DGetdata(domain, name)
-	}
-	return pkg_DGetdata(domain, name)
+	return defaultGettexter.DGetdata(domain, name)
 }

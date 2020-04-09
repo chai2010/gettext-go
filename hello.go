@@ -13,10 +13,19 @@ import (
 )
 
 func main() {
-	gettext.SetLocale("zh_CN")
-	gettext.BindTextdomain("hello", "./examples/local", nil)
-	gettext.Textdomain("hello")
+	gettext.SetLanguage("zh_CN")
+	gettext.BindLocale(gettext.New("hello", "./examples/locale"))
 
 	fmt.Println(gettext.Gettext("Hello, world!"))
-	// Output: 你好, 世界!
+
+	// Output:
+	// 你好, 世界!
+
+	func() {
+		gettext := gettext.New("hello", "./examples/locale").SetLanguage("zh_TW")
+		fmt.Println(gettext.PGettext("main.func", "Gettext in func."))
+
+		// Output:
+		// 閉包函數中的Gettext.(ctx:main.func)
+	}()
 }

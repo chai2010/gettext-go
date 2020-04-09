@@ -16,15 +16,14 @@ func init() {
 	fmt.Println("=== main.init: default ===")
 
 	// bind app domain
-	gettext.BindTextdomain("hello", "local", nil)
-	gettext.Textdomain("hello")
+	gettext.BindLocale(gettext.New("hello", "locale"))
 
 	// $(LC_MESSAGES) or $(LANG) or empty
 	fmt.Println(gettext.Gettext("Gettext in init."))
 	fmt.Println(gettext.PGettext("main.init", "Gettext in init."))
 	hi.SayHi()
 
-	// Output(depends on local environment):
+	// Output(depends on locale environment):
 	// ?
 	// ?
 	// ?
@@ -33,7 +32,7 @@ func init() {
 	fmt.Println("=== main.init: zh_CN ===")
 
 	// set simple chinese
-	gettext.SetLocale("zh_CN")
+	gettext.SetLanguage("zh_CN")
 
 	// simple chinese
 	fmt.Println(gettext.Gettext("Gettext in init."))
@@ -64,7 +63,7 @@ func main() {
 	fmt.Println("=== main.main: zh_TW ===")
 
 	// set traditional chinese
-	gettext.SetLocale("zh_TW")
+	gettext.SetLanguage("zh_TW")
 
 	// traditional chinese
 	func() {
@@ -83,15 +82,15 @@ func main() {
 
 	// translate resource
 	fmt.Println("=== main.main: zh_CN ===")
-	gettext.SetLocale("zh_CN")
+	gettext.SetLanguage("zh_CN")
 	fmt.Println("poems(simple chinese):")
 	fmt.Println(string(gettext.Getdata("poems.txt")))
 	fmt.Println("=== main.main: zh_TW ===")
-	gettext.SetLocale("zh_TW")
+	gettext.SetLanguage("zh_TW")
 	fmt.Println("poems(traditional chinese):")
 	fmt.Println(string(gettext.Getdata("poems.txt")))
 	fmt.Println("=== main.main: ?? ===")
-	gettext.SetLocale("??")
+	gettext.SetLanguage("??")
 	fmt.Println("poems(default is english):")
 	fmt.Println(string(gettext.Getdata("poems.txt")))
 	// Output: ...

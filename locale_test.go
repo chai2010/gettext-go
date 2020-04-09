@@ -9,15 +9,15 @@ import (
 )
 
 func TestLocale(t *testing.T) {
-	l := NewLocale("hello", "./examples/local", nil).SetLang("zh_CN")
+	l := newLocale("hello", "./examples/locale", nil).SetLanguage("zh_CN")
 	testLocal_zh_CN(t, l)
 
-	l = NewLocale("hello", "./examples/local.zip", nil).SetLang("zh_CN")
+	l = newLocale("hello", "./examples/locale.zip", nil).SetLanguage("zh_CN")
 	testLocal_zh_CN(t, l)
 }
 
-func testLocal_zh_CN(t *testing.T, l *Locale) {
-	lang := l.GetLang()
+func testLocal_zh_CN(t *testing.T, l Gettexter) {
+	lang := l.GetLanguage()
 	tAssert(t, lang == "zh_CN", lang)
 
 	expect := "你好, 世界!"

@@ -3,11 +3,11 @@
 # license that can be found in the LICENSE file.
 
 default:
-	msgfmt -o local/default/LC_MESSAGES/hello.mo local/default/LC_MESSAGES/hello.po
-	msgfmt -o local/zh_CN/LC_MESSAGES/hello.mo   local/zh_CN/LC_MESSAGES/hello.po
-	msgfmt -o local/zh_TW/LC_MESSAGES/hello.mo   local/zh_TW/LC_MESSAGES/hello.po
-	7z a -tzip -scsUTF-8 local.zip local
+	msgfmt -o locale/default/LC_MESSAGES/hello.mo locale/default/LC_MESSAGES/hello.po
+	msgfmt -o locale/zh_CN/LC_MESSAGES/hello.mo   locale/zh_CN/LC_MESSAGES/hello.po
+	msgfmt -o locale/zh_TW/LC_MESSAGES/hello.mo   locale/zh_TW/LC_MESSAGES/hello.po
+	7z a -tzip -scsUTF-8 locale.zip locale
 	go run hello.go
 
 clean:
-	rm local.zip
+	rm locale.zip

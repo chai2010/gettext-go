@@ -11,14 +11,13 @@ Example:
 	)
 
 	func main() {
-		gettext.SetLocale("zh_CN")
-		gettext.Textdomain("hello")
+		gettext.SetLanguage("zh_CN")
 
-		// gettext.BindTextdomain("hello", "local", nil)         // from local dir
-		// gettext.BindTextdomain("hello", "local.zip", nil)     // from local zip file
-		// gettext.BindTextdomain("hello", "local.zip", zipData) // from embedded zip data
+		// gettext.BindLocale(gettext.New("hello", "locale"))              // from locale dir
+		// gettext.BindLocale(gettext.New("hello", "locale.zip"))          // from locale zip file
+		// gettext.BindLocale(gettext.New("hello", "locale.zip", zipData)) // from embedded zip data
 
-		gettext.BindTextdomain("hello", "local", nil)
+		gettext.BindLocale(gettext.New("hello", "locale"))
 
 		// translate source text
 		fmt.Println(gettext.Gettext("Hello, world!"))
@@ -29,27 +28,27 @@ Example:
 		// Output: ...
 	}
 
-Translate directory struct("./examples/local.zip"):
+Translate directory struct("./examples/locale.zip"):
 
 	Root: "path" or "file.zip/zipBaseName"
-	 +-default                 # local: $(LC_MESSAGES) or $(LANG) or "default"
+	 +-default                 # locale: $(LC_MESSAGES) or $(LANG) or "default"
 	 |  +-LC_MESSAGES            # just for `gettext.Gettext`
-	 |  |   +-hello.mo             # $(Root)/$(local)/LC_MESSAGES/$(domain).mo
-	 |  |   \-hello.po             # $(Root)/$(local)/LC_MESSAGES/$(domain).mo
+	 |  |   +-hello.mo             # $(Root)/$(locale)/LC_MESSAGES/$(domain).mo
+	 |  |   \-hello.po             # $(Root)/$(locale)/LC_MESSAGES/$(domain).mo
 	 |  |
 	 |  \-LC_RESOURCE            # just for `gettext.Getdata`
 	 |      +-hello                # domain map a dir in resource translate
-	 |         +-favicon.ico       # $(Root)/$(local)/LC_RESOURCE/$(domain)/$(filename)
+	 |         +-favicon.ico       # $(Root)/$(locale)/LC_RESOURCE/$(domain)/$(filename)
 	 |         \-poems.txt
 	 |
 	 \-zh_CN                   # simple chinese translate
 	    +-LC_MESSAGES
-	    |   +-hello.mo             # try "$(domain).mo" first
-	    |   \-hello.po             # try "$(domain).po" second
+	    |   +-hello.po             # try "$(domain).po" first
+	    |   \-hello.mo             # try "$(domain).mo" second
 	    |
 	    \-LC_RESOURCE
 	        +-hello
-	           +-favicon.ico       # try "$(local)/$(domain)/file" first
+	           +-favicon.ico       # try "$(locale)/$(domain)/file" first
 	           \-poems.txt         # try "default/$(domain)/file" second
 
 See:

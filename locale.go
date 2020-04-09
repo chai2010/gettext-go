@@ -9,7 +9,7 @@ import (
 	"sync"
 )
 
-type Locale struct {
+type _Locale struct {
 	mutex  sync.Mutex
 	fs     FileSystem
 	lang   string
@@ -17,34 +17,46 @@ type Locale struct {
 	trMap  map[string]*translator
 }
 
-var _ Gettexter = (*Locale)(nil)
+var _ Gettexter = (*_Locale)(nil)
 
-func NewLocale(domain, path string, data interface{}) *Locale {
-	p := &Locale{
-		fs:     NewFS(path, data),
-		lang:   DefaultLang,
+func newLocale(domain, path string, data ...interface{}) *_Locale {
+	if domain == "" {
+		domain = "default"
+	}
+	p := &_Locale{
+		lang:   DefaultLanguage,
 		domain: domain,
 	}
+	if len(data) > 0 {
+		p.fs = NewFS(path, data[0])
+	} else {
+		p.fs = NewFS(path, nil)
+	}
+
 	p.syncTrMap()
 	return p
 }
 
-func (p *Locale) makeTrMapKey(domain, locale string) string {
-	return domain + "_$$$_" + locale
+func (p *_Locale) makeTrMapKey(domain, _Locale string) string {
+	return domain + "_$$$_" + _Locale
 }
 
-func (p *Locale) GetLang() string {
+func (p *_Locale) FileSystem() FileSystem {
+	return p.fs
+}
+
+func (p *_Locale) GetLanguage() string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 
 	return p.lang
 }
-func (p *Locale) SetLang(lang string) *Locale {
+func (p *_Locale) SetLanguage(lang string) Gettexter {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 
 	if lang == "" {
-		lang = DefaultLang
+		lang = DefaultLanguage
 	}
 	if lang == p.lang {
 		return p
@@ -55,11 +67,13 @@ func (p *Locale) SetLang(lang string) *Locale {
 	return p
 }
 
-func (p *Locale) FileSystem() FileSystem {
-	return p.fs
+func (p *_Locale) GetDomain() string {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+	return p.domain
 }
 
-func (p *Locale) SetDomain(domain string) *Locale {
+func (p *_Locale) SetDomain(domain string) Gettexter {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 
@@ -72,7 +86,7 @@ func (p *Locale) SetDomain(domain string) *Locale {
 	return p
 }
 
-func (p *Locale) syncTrMap() {
+func (p *_Locale) syncTrMap() {
 	p.trMap = make(map[string]*translator)
 	trMapKey := p.makeTrMapKey(p.domain, p.lang)
 
@@ -104,76 +118,70 @@ func (p *Locale) syncTrMap() {
 	return
 }
 
-func (p *Locale) GetDomain() string {
-	p.mutex.Lock()
-	defer p.mutex.Unlock()
-	return p.domain
-}
-
-func (p *Locale) Gettext(msgid string) string {
+func (p *_Locale) Gettext(msgid string) string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	return p.gettext(p.domain, "", msgid, "", 0)
 }
 
-func (p *Locale) PGettext(msgctxt, msgid string) string {
+func (p *_Locale) PGettext(msgctxt, msgid string) string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	return p.gettext(p.domain, msgctxt, msgid, "", 0)
 }
 
-func (p *Locale) NGettext(msgid, msgidPlural string, n int) string {
+func (p *_Locale) NGettext(msgid, msgidPlural string, n int) string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	return p.gettext(p.domain, "", msgid, msgidPlural, n)
 }
 
-func (p *Locale) PNGettext(msgctxt, msgid, msgidPlural string, n int) string {
+func (p *_Locale) PNGettext(msgctxt, msgid, msgidPlural string, n int) string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	return p.gettext(p.domain, msgctxt, msgid, msgidPlural, n)
 }
 
-func (p *Locale) DGettext(domain, msgid string) string {
+func (p *_Locale) DGettext(domain, msgid string) string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	return p.gettext(domain, "", msgid, "", 0)
 }
 
-func (p *Locale) DNGettext(domain, msgid, msgidPlural string, n int) string {
+func (p *_Locale) DNGettext(domain, msgid, msgidPlural string, n int) string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	return p.gettext(domain, "", msgid, msgidPlural, n)
 }
 
-func (p *Locale) DPGettext(domain, msgctxt, msgid string) string {
+func (p *_Locale) DPGettext(domain, msgctxt, msgid string) string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	return p.gettext(domain, msgctxt, msgid, "", 0)
 }
 
-func (p *Locale) DPNGettext(domain, msgctxt, msgid, msgidPlural string, n int) string {
+func (p *_Locale) DPNGettext(domain, msgctxt, msgid, msgidPlural string, n int) string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 	return p.gettext(domain, msgctxt, msgid, msgidPlural, n)
 }
 
-func (p *Locale) Getdata(name string) []byte {
+func (p *_Locale) Getdata(name string) []byte {
 	return p.getdata(p.domain, name)
 }
 
-func (p *Locale) DGetdata(domain, name string) []byte {
+func (p *_Locale) DGetdata(domain, name string) []byte {
 	return p.getdata(domain, name)
 }
 
-func (p *Locale) gettext(domain, msgctxt, msgid, msgidPlural string, n int) string {
+func (p *_Locale) gettext(domain, msgctxt, msgid, msgidPlural string, n int) string {
 	if f, ok := p.trMap[p.makeTrMapKey(domain, p.lang)]; ok {
 		return f.PNGettext(msgctxt, msgid, msgidPlural, n)
 	}
 	return msgid
 }
 
-func (p *Locale) getdata(domain, name string) []byte {
+func (p *_Locale) getdata(domain, name string) []byte {
 	if data, err := p.fs.LoadResourceFile(domain, p.lang, name); err == nil {
 		return data
 	}

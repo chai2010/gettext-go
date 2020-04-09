@@ -42,27 +42,8 @@ func (p *zipFS) LocaleList() []string {
 	return locals
 }
 
-func (p *zipFS) DomainList(locale string) []string {
-	var domainMap = make(map[string]string)
-	for _, f := range p.r.File {
-		if strings.HasSuffix(f.Name, ".mo") || strings.HasSuffix(f.Name, ".po") {
-			if strings.Contains(f.Name, locale+"/LC_MESSAGES") {
-				domain := f.Name[strings.LastIndex(f.Name, "/")+1 : strings.LastIndex(f.Name, ".")]
-				domainMap[domain] = domain
-			}
-		}
-	}
-
-	var keys []string
-	for _, s := range domainMap {
-		keys = append(keys, s)
-	}
-	sort.Strings(keys)
-	return keys
-}
-
-func (p *zipFS) LoadMessagesFile(domain, local, ext string) ([]byte, error) {
-	trName := p.makeMessagesFileName(domain, local, ext)
+func (p *zipFS) LoadMessagesFile(domain, lang, ext string) ([]byte, error) {
+	trName := p.makeMessagesFileName(domain, lang, ext)
 	for _, f := range p.r.File {
 		if f.Name != trName {
 			continue
@@ -76,11 +57,10 @@ func (p *zipFS) LoadMessagesFile(domain, local, ext string) ([]byte, error) {
 		return rcData, err
 	}
 	return nil, fmt.Errorf("not found")
-
 }
 
-func (p *zipFS) LoadResourceFile(domain, local, name string) ([]byte, error) {
-	rcName := p.makeResourceFileName(domain, local, name)
+func (p *zipFS) LoadResourceFile(domain, lang, name string) ([]byte, error) {
+	rcName := p.makeResourceFileName(domain, lang, name)
 	for _, f := range p.r.File {
 		if f.Name != rcName {
 			continue
@@ -100,12 +80,12 @@ func (p *zipFS) String() string {
 	return "gettext.zipfs(" + p.name + ")"
 }
 
-func (p *zipFS) makeMessagesFileName(domain, local, ext string) string {
-	return fmt.Sprintf("%s/%s/LC_MESSAGES/%s%s", p.root, local, domain, ext)
+func (p *zipFS) makeMessagesFileName(domain, lang, ext string) string {
+	return fmt.Sprintf("%s/%s/LC_MESSAGES/%s%s", p.root, lang, domain, ext)
 }
 
-func (p *zipFS) makeResourceFileName(domain, local, name string) string {
-	return fmt.Sprintf("%s/%s/LC_RESOURCE/%s/%s", p.root, local, domain, name)
+func (p *zipFS) makeResourceFileName(domain, lang, name string) string {
+	return fmt.Sprintf("%s/%s/LC_RESOURCE/%s/%s", p.root, lang, domain, name)
 }
 
 func (p *zipFS) lsZip(r *zip.Reader) map[string]bool {

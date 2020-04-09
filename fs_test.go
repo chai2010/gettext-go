@@ -9,15 +9,15 @@ import (
 )
 
 func TestFileSystem_os(t *testing.T) {
-	fs := OS("./examples/local")
-	tAssert(t, fs.String() == "gettext.localfs(./examples/local)", fs.String())
+	fs := OS("./examples/locale")
+	tAssert(t, fs.String() == "gettext.localfs(./examples/locale)", fs.String())
 
 	testExamplesLocal(t, fs)
 }
 
 func TestFileSystem_zip(t *testing.T) {
-	fs := NewFS("./examples/local.zip", nil)
-	tAssert(t, fs.String() == "gettext.zipfs(./examples/local.zip)", fs.String())
+	fs := NewFS("./examples/locale.zip", nil)
+	tAssert(t, fs.String() == "gettext.zipfs(./examples/locale.zip)", fs.String())
 
 	testExamplesLocal(t, fs)
 }
