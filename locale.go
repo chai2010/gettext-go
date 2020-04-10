@@ -10,11 +10,12 @@ import (
 )
 
 type _Locale struct {
-	mutex  sync.Mutex
-	fs     FileSystem
-	lang   string
-	domain string
-	trMap  map[string]*translator
+	mutex     sync.Mutex
+	fs        FileSystem
+	lang      string
+	domain    string
+	trMap     map[string]*translator
+	trCurrent *translator
 }
 
 var _ Gettexter = (*_Locale)(nil)
@@ -90,56 +91,57 @@ func (p *_Locale) syncTrMap() {
 	p.trMap = make(map[string]*translator)
 	trMapKey := p.makeTrMapKey(p.domain, p.lang)
 
+	if tr, ok := p.trMap[trMapKey]; ok {
+		p.trCurrent = tr
+		return
+	}
+
 	// try load po file
-	if _, ok := p.trMap[trMapKey]; !ok {
-		if data, err := p.fs.LoadMessagesFile(p.domain, p.lang, ".po"); err == nil {
-			p.trMap[trMapKey], _ = newPoTranslator(
-				fmt.Sprintf("%s_%s.po", p.domain, p.lang),
-				data,
-			)
+	if data, err := p.fs.LoadMessagesFile(p.domain, p.lang, ".po"); err == nil {
+		if tr, err := newPoTranslator(fmt.Sprintf("%s_%s.po", p.domain, p.lang), data); err == nil {
+			p.trMap[trMapKey] = tr
+			p.trCurrent = tr
+			return
 		}
 	}
 
 	// try load mo file
-	if _, ok := p.trMap[trMapKey]; !ok {
-		if data, err := p.fs.LoadMessagesFile(p.domain, p.lang, ".mo"); err == nil {
-			p.trMap[trMapKey], _ = newMoTranslator(
-				fmt.Sprintf("%s_%s.mo", p.domain, p.lang),
-				data,
-			)
+	if data, err := p.fs.LoadMessagesFile(p.domain, p.lang, ".mo"); err == nil {
+		if tr, err := newMoTranslator(fmt.Sprintf("%s_%s.mo", p.domain, p.lang), data); err == nil {
+			p.trMap[trMapKey] = tr
+			p.trCurrent = tr
+			return
 		}
 	}
 
 	// no po/mo file
-	if _, ok := p.trMap[trMapKey]; !ok {
-		p.trMap[trMapKey] = nilTranslator
-	}
-
+	p.trMap[trMapKey] = nilTranslator
+	p.trCurrent = nilTranslator
 	return
 }
 
 func (p *_Locale) Gettext(msgid string) string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
-	return p.gettext(p.domain, "", msgid, "", 0)
+	return p.trCurrent.PGettext("", msgid)
 }
 
 func (p *_Locale) PGettext(msgctxt, msgid string) string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
-	return p.gettext(p.domain, msgctxt, msgid, "", 0)
+	return p.trCurrent.PGettext(msgctxt, msgid)
 }
 
 func (p *_Locale) NGettext(msgid, msgidPlural string, n int) string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
-	return p.gettext(p.domain, "", msgid, msgidPlural, n)
+	return p.trCurrent.PNGettext("", msgid, msgidPlural, n)
 }
 
 func (p *_Locale) PNGettext(msgctxt, msgid, msgidPlural string, n int) string {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
-	return p.gettext(p.domain, msgctxt, msgid, msgidPlural, n)
+	return p.trCurrent.PNGettext(msgctxt, msgid, msgidPlural, n)
 }
 
 func (p *_Locale) DGettext(domain, msgid string) string {

@@ -81,7 +81,7 @@ func newPoTranslator(name string, data []byte) (*translator, error) {
 }
 
 func (p *translator) PGettext(msgctxt, msgid string) string {
-	return p.PNGettext(msgctxt, msgid, "", 0)
+	return p.findMsgStr(msgctxt, msgid)
 }
 
 func (p *translator) PNGettext(msgctxt, msgid, msgidPlural string, n int) string {
@@ -96,6 +96,16 @@ func (p *translator) PNGettext(msgctxt, msgid, msgidPlural string, n int) string
 	}
 	if msgidPlural != "" && n > 0 {
 		return msgidPlural
+	}
+	return msgid
+}
+
+func (p *translator) findMsgStr(msgctxt, msgid string) string {
+	key := p.makeMapKey(msgctxt, msgid)
+	if v, ok := p.MessageMap[key]; ok {
+		if v.MsgStr != "" {
+			return v.MsgStr
+		}
 	}
 	return msgid
 }

@@ -20,7 +20,7 @@ type zipFS struct {
 
 func newZipFS(r *zip.Reader, name string) *zipFS {
 	fs := &zipFS{r: r, name: name}
-	fs.root = fs.zipName()
+	fs.root = fs.zipRoot()
 	return fs
 }
 
@@ -31,6 +31,32 @@ func (p *zipFS) zipName() string {
 	}
 	name = strings.TrimSuffix(name, ".zip")
 	return name
+}
+
+func (p *zipFS) zipRoot() string {
+	var somepath string
+	for _, f := range p.r.File {
+		if x := strings.Index(f.Name, "LC_MESSAGES"); x != -1 {
+			somepath = f.Name
+		}
+		if x := strings.Index(f.Name, "LC_RESOURCE"); x != -1 {
+			somepath = f.Name
+		}
+	}
+	if somepath == "" {
+		return p.zipName()
+	}
+
+	ss := strings.Split(somepath, "/")
+	for i, s := range ss {
+		// $(root)/$(lang)/LC_MESSAGES
+		// $(root)/$(lang)/LC_RESOURCE
+		if (s == "LC_MESSAGES" || s == "LC_RESOURCE") && i >= 2 {
+			return strings.Join(ss[:i-1], "/")
+		}
+	}
+
+	return p.zipName()
 }
 
 func (p *zipFS) LocaleList() []string {

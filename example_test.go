@@ -34,7 +34,7 @@ func Example_zipData() {
 		log.Fatal(err)
 	}
 
-	gettext := gettext.New("hello", "locale.zip", zipData).SetLanguage("zh_CN")
+	gettext := gettext.New("hello", "???", zipData).SetLanguage("zh_CN")
 	fmt.Println(gettext.Gettext("Hello, world!"))
 
 	// Output:
