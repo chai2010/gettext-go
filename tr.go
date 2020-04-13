@@ -5,6 +5,8 @@
 package gettext
 
 import (
+	"encoding/json"
+
 	"github.com/chai2010/gettext-go/mo"
 	"github.com/chai2010/gettext-go/plural"
 	"github.com/chai2010/gettext-go/po"
@@ -76,6 +78,41 @@ func newPoTranslator(name string, data []byte) (*translator, error) {
 		tr.PluralFormula = plural.Formula(lang)
 	} else {
 		tr.PluralFormula = plural.Formula("??")
+	}
+	return tr, nil
+}
+
+func newJsonTranslator(lang, name string, jsonData []byte) (*translator, error) {
+	var msgList []struct {
+		MsgContext  string   `json:"msgctxt"`      // msgctxt context
+		MsgId       string   `json:"msgid"`        // msgid untranslated-string
+		MsgIdPlural string   `json:"msgid_plural"` // msgid_plural untranslated-string-plural
+		MsgStr      []string `json:"msgstr"`       // msgstr translated-string
+	}
+	if err := json.Unmarshal(jsonData, &msgList); err != nil {
+		return nil, err
+	}
+
+	var tr = &translator{
+		MessageMap:    make(map[string]mo.Message),
+		PluralFormula: plural.Formula(lang),
+	}
+
+	for _, v := range msgList {
+		var v_MsgStr string
+		var v_MsgStrPlural = v.MsgStr
+
+		if len(v.MsgStr) != 0 {
+			v_MsgStr = v.MsgStr[0]
+		}
+
+		tr.MessageMap[tr.makeMapKey(v.MsgContext, v.MsgId)] = mo.Message{
+			MsgContext:   v.MsgContext,
+			MsgId:        v.MsgId,
+			MsgIdPlural:  v.MsgIdPlural,
+			MsgStr:       v_MsgStr,
+			MsgStrPlural: v_MsgStrPlural,
+		}
 	}
 	return tr, nil
 }

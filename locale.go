@@ -114,6 +114,15 @@ func (p *_Locale) syncTrMap() {
 		}
 	}
 
+	// try load json file
+	if data, err := p.fs.LoadMessagesFile(p.domain, p.lang, ".json"); err == nil {
+		if tr, err := newJsonTranslator(p.lang, fmt.Sprintf("%s_%s.json", p.domain, p.lang), data); err == nil {
+			p.trMap[trMapKey] = tr
+			p.trCurrent = tr
+			return
+		}
+	}
+
 	// no po/mo file
 	p.trMap[trMapKey] = nilTranslator
 	p.trCurrent = nilTranslator

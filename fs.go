@@ -33,12 +33,18 @@ func NewFS(name string, x interface{}) FileSystem {
 		if r, err := zip.NewReader(bytes.NewReader(x), int64(len(x))); err == nil {
 			return ZipFS(r, name)
 		}
+		if fs, err := newJson(x, name); err == nil {
+			return fs
+		}
 	case string:
 		if len(x) == 0 {
 			return OS(name)
 		}
 		if r, err := zip.NewReader(bytes.NewReader([]byte(x)), int64(len(x))); err == nil {
 			return ZipFS(r, name)
+		}
+		if fs, err := newJson([]byte(x), name); err == nil {
+			return fs
 		}
 	case FileSystem:
 		return x
@@ -64,9 +70,6 @@ type nilFS struct {
 }
 
 func (p *nilFS) LocaleList() []string {
-	return nil
-}
-func (p *nilFS) DomainList(locale string) []string {
 	return nil
 }
 

@@ -69,3 +69,24 @@ func Example_multiLang() {
 	// 来自"Hi"包的问候: 你好, 世界!(ctx:code.google.com/p/gettext-go/examples/hi.SayHi)
 	// 來自"Hi"包的問候: 你好, 世界!(ctx:code.google.com/p/gettext-go/examples/hi.SayHi)
 }
+
+func Example_json() {
+	const jsonData = `{
+		"zh_CN": {
+			"LC_MESSAGES": {
+				"hello.json": [{
+					"msgctxt"     : "",
+					"msgid"       : "Hello, world!",
+					"msgid_plural": "",
+					"msgstr"      : ["你好, 世界!"]
+				}]
+			}
+		}
+	}`
+
+	gettext := gettext.New("hello", "???", jsonData).SetLanguage("zh_CN")
+	fmt.Println(gettext.Gettext("Hello, world!"))
+
+	// Output:
+	// 你好, 世界!
+}
