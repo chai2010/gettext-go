@@ -28,6 +28,13 @@ func newOsFS(root string) FileSystem {
 				}
 			}
 		}
+		if strings.HasSuffix(strings.ToLower(root), ".json") {
+			if x, err := ioutil.ReadFile(root); err == nil {
+				if fs, err := newJson(x, root); err == nil {
+					return fs
+				}
+			}
+		}
 	}
 
 	// locale dir
