@@ -33,23 +33,25 @@ Translate directory struct("./examples/locale.zip"):
 	Root: "path" or "file.zip/zipBaseName"
 	 +-default                 # locale: $(LC_MESSAGES) or $(LANG) or "default"
 	 |  +-LC_MESSAGES            # just for `gettext.Gettext`
-	 |  |   +-hello.mo             # $(Root)/$(locale)/LC_MESSAGES/$(domain).mo
-	 |  |   \-hello.po             # $(Root)/$(locale)/LC_MESSAGES/$(domain).mo
+	 |  |   +-hello.mo             # $(Root)/$(lang)/LC_MESSAGES/$(domain).mo
+	 |  |   +-hello.po             # $(Root)/$(lang)/LC_MESSAGES/$(domain).po
+	 |  |   \-hello.json           # $(Root)/$(lang)/LC_MESSAGES/$(domain).json
 	 |  |
 	 |  \-LC_RESOURCE            # just for `gettext.Getdata`
 	 |      +-hello                # domain map a dir in resource translate
-	 |         +-favicon.ico       # $(Root)/$(locale)/LC_RESOURCE/$(domain)/$(filename)
+	 |         +-favicon.ico       # $(Root)/$(lang)/LC_RESOURCE/$(domain)/$(filename)
 	 |         \-poems.txt
 	 |
 	 \-zh_CN                   # simple chinese translate
 	    +-LC_MESSAGES
 	    |   +-hello.po             # try "$(domain).po" first
-	    |   \-hello.mo             # try "$(domain).mo" second
+	    |   +-hello.mo             # try "$(domain).mo" second
+	    |   \-hello.json           # try "$(domain).json" third
 	    |
 	    \-LC_RESOURCE
 	        +-hello
-	           +-favicon.ico       # try "$(locale)/$(domain)/file" first
-	           \-poems.txt         # try "default/$(domain)/file" second
+	           +-favicon.ico       # $(lang)/$(domain)/favicon.ico
+	           \-poems.txt         # $(lang)/$(domain)/poems.txt
 
 See:
 	http://en.wikipedia.org/wiki/Gettext
