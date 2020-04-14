@@ -195,3 +195,28 @@ func (f *File) String() string {
 
 	return buf.String()
 }
+
+func (f *File) Gettext(msgid string) string {
+	for _, msg := range f.Messages {
+		if msg.MsgContext == "" && msg.MsgId == msgid {
+			if msg.MsgStr != "" {
+				return msg.MsgStr
+			} else {
+				return msgid
+			}
+		}
+	}
+	return msgid
+}
+func (f *File) PGettext(msgctxt, msgid string) string {
+	for _, msg := range f.Messages {
+		if msg.MsgContext == msgctxt && msg.MsgId == msgid {
+			if msg.MsgStr != "" {
+				return msg.MsgStr
+			} else {
+				return msgid
+			}
+		}
+	}
+	return msgid
+}
