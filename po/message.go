@@ -167,15 +167,27 @@ func (p *Message) readString(r *lineReader) (msg string, err error) {
 func (p Message) String() string {
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "%s", p.Comment.String())
+	if p.MsgContext != "" {
+		fmt.Fprintf(&buf, "msgctxt %s", encodePoString(p.MsgContext))
+	}
 	fmt.Fprintf(&buf, "msgid %s", encodePoString(p.MsgId))
 	if p.MsgIdPlural != "" {
 		fmt.Fprintf(&buf, "msgid_plural %s", encodePoString(p.MsgIdPlural))
 	}
-	if p.MsgStr != "" {
-		fmt.Fprintf(&buf, "msgstr %s", encodePoString(p.MsgStr))
-	}
-	for i := 0; i < len(p.MsgStrPlural); i++ {
-		fmt.Fprintf(&buf, "msgstr[%d] %s", i, encodePoString(p.MsgStrPlural[i]))
+	if len(p.MsgStrPlural) == 0 {
+		if p.MsgStr != "" {
+			fmt.Fprintf(&buf, "msgstr %s", encodePoString(p.MsgStr))
+		} else {
+			fmt.Fprintf(&buf, "msgstr %s", `""`+"\n")
+		}
+	} else {
+		for i := 0; i < len(p.MsgStrPlural); i++ {
+			if p.MsgStrPlural[i] != "" {
+				fmt.Fprintf(&buf, "msgstr[%d] %s", i, encodePoString(p.MsgStrPlural[i]))
+			} else {
+				fmt.Fprintf(&buf, "msgstr[%d] %s", i, `""`+"\n")
+			}
+		}
 	}
 	return buf.String()
 }
