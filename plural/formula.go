@@ -9,12 +9,7 @@ import (
 )
 
 // Formula provides the language's standard plural formula.
-func Formula(pluralFormHeader string) func(n int) int {
-	return formulaTable[fmtForms(pluralFormHeader)]
-}
-
-// FormulaByLang provides the language's standard plural formula.
-func FormulaByLang(lang string) func(n int) int {
+func Formula(lang string) func(n int) int {
 	if idx := index(lang); idx != -1 {
 		return formulaTable[fmtForms(FormsTable[idx].Value)]
 	}
