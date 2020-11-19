@@ -14,7 +14,7 @@ import (
 
 var nilTranslator = &translator{
 	MessageMap:    make(map[string]mo.Message),
-	PluralFormula: plural.Formula("??"),
+	PluralFormula: plural.FormulaByLang("??"),
 }
 
 type translator struct {
@@ -41,10 +41,12 @@ func newMoTranslator(name string, data []byte) (*translator, error) {
 	for _, v := range f.Messages {
 		tr.MessageMap[tr.makeMapKey(v.MsgContext, v.MsgId)] = v
 	}
-	if lang := f.MimeHeader.Language; lang != "" {
-		tr.PluralFormula = plural.Formula(lang)
+	if pluralFormHeader := f.MimeHeader.PluralForms; pluralFormHeader != "" {
+		tr.PluralFormula = plural.Formula(pluralFormHeader)
+	} else if lang := f.MimeHeader.Language; lang != "" {
+		tr.PluralFormula = plural.FormulaByLang(lang)
 	} else {
-		tr.PluralFormula = plural.Formula("??")
+		tr.PluralFormula = plural.FormulaByLang("??")
 	}
 	return tr, nil
 }
@@ -74,10 +76,12 @@ func newPoTranslator(name string, data []byte) (*translator, error) {
 			MsgStrPlural: v.MsgStrPlural,
 		}
 	}
-	if lang := f.MimeHeader.Language; lang != "" {
-		tr.PluralFormula = plural.Formula(lang)
+	if pluralFormHeader := f.MimeHeader.PluralForms; pluralFormHeader != "" {
+		tr.PluralFormula = plural.Formula(pluralFormHeader)
+	} else if lang := f.MimeHeader.Language; lang != "" {
+		tr.PluralFormula = plural.FormulaByLang(lang)
 	} else {
-		tr.PluralFormula = plural.Formula("??")
+		tr.PluralFormula = plural.FormulaByLang("??")
 	}
 	return tr, nil
 }
@@ -95,7 +99,7 @@ func newJsonTranslator(lang, name string, jsonData []byte) (*translator, error) 
 
 	var tr = &translator{
 		MessageMap:    make(map[string]mo.Message),
-		PluralFormula: plural.Formula(lang),
+		PluralFormula: plural.FormulaByLang(lang),
 	}
 
 	for _, v := range msgList {
