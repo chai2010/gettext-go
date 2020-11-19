@@ -13,7 +13,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/chai2010/gettext-go/po"
+	"github.com/ContextLogic/goi18n/po"
 )
 
 var (
@@ -33,7 +33,7 @@ func init() {
 		flag.PrintDefaults()
 		fmt.Println()
 
-		fmt.Println("See https://github.com/chai2010/gettext-go")
+		fmt.Println("See https://github.com/ContextLogic/goi18n")
 	}
 }
 

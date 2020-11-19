@@ -149,7 +149,7 @@ var testTexts = []struct {
 	{"default", "main.init", "Gettext in init.", "Gettext in init."},
 	{"default", "main.main", "Hello, world!", "Hello, world!"},
 	{"default", "main.func", "Gettext in func.", "Gettext in func."},
-	{"default", "github.com/chai2010/gettext-go/examples/hi.SayHi", "pkg hi: Hello, world!", "pkg hi: Hello, world!"},
+	{"default", "github.com/ContextLogic/goi18n/examples/hi.SayHi", "pkg hi: Hello, world!", "pkg hi: Hello, world!"},
 
 	// zh_CN
 	{"zh_CN", "main.init", "Gettext in init.", "Init函数中的Gettext.(ctx:main.init)"},

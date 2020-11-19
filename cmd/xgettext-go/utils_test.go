@@ -14,9 +14,9 @@ func Example_gopkgPath() {
 	fmt.Println(gopkgPath("../..//examples/hi"))
 
 	// Output:
-	// github.com/chai2010/gettext-go/cmd/xgettext-go
-	// github.com/chai2010/gettext-go
-	// github.com/chai2010/gettext-go/examples/hi
+	// github.com/ContextLogic/goi18n/cmd/xgettext-go
+	// github.com/ContextLogic/goi18n
+	// github.com/ContextLogic/goi18n/examples/hi
 }
 
 func Example_gopkgFiles() {

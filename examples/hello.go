@@ -8,8 +8,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/chai2010/gettext-go"
-	"github.com/chai2010/gettext-go/examples/hi"
+	"github.com/ContextLogic/goi18n"
+	"github.com/ContextLogic/goi18n/examples/hi"
 )
 
 func init() {
