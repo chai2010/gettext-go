@@ -5,3 +5,5 @@
 module github.com/ContextLogic/goi18n
 
 go 1.14
+
+require github.com/leonelquinteros/gotext v1.4.0

@@ -5,24 +5,31 @@
 package plural
 
 import (
+	gotextp "github.com/leonelquinteros/gotext/plurals"
+
 	"strings"
 )
 
 // Formula provides the language's standard plural formula.
-func Formula(pluralFormHeader string) func(n int) int {
-	return formulaTable[fmtForms(pluralFormHeader)]
+func Formula(pluralFormHeader string) (func(n uint32) int, error) {
+	expr, err := gotextp.Compile(pluralFormHeader)
+	if err != nil {
+		return nil, err
+	}
+	return expr.Eval, nil
+
 }
 
 // FormulaByLang provides the language's standard plural formula.
-func FormulaByLang(lang string) func(n int) int {
+func FormulaByLang(lang string) func(n uint32) int {
 	if idx := index(lang); idx != -1 {
 		return formulaTable[fmtForms(FormsTable[idx].Value)]
 	}
 	if idx := index("??"); idx != -1 {
 		return formulaTable[fmtForms(FormsTable[idx].Value)]
 	}
-	return func(n int) int {
-		return n
+	return func(n uint32) int {
+		return int(n)
 	}
 }
 
@@ -41,29 +48,29 @@ func fmtForms(forms string) string {
 	return forms
 }
 
-var formulaTable = map[string]func(n int) int{
-	fmtForms("nplurals=n; plural=n-1;"): func(n int) int {
+var formulaTable = map[string]func(n uint32) int{
+	fmtForms("nplurals=n; plural=n-1;"): func(n uint32) int {
 		if n > 0 {
-			return n - 1
+			return int(n - 1)
 		}
 		return 0
 	},
-	fmtForms("nplurals=1; plural=0;"): func(n int) int {
+	fmtForms("nplurals=1; plural=0;"): func(n uint32) int {
 		return 0
 	},
-	fmtForms("nplurals=2; plural=(n != 1);"): func(n int) int {
+	fmtForms("nplurals=2; plural=(n != 1);"): func(n uint32) int {
 		if n <= 1 {
 			return 0
 		}
 		return 1
 	},
-	fmtForms("nplurals=2; plural=(n > 1);"): func(n int) int {
+	fmtForms("nplurals=2; plural=(n > 1);"): func(n uint32) int {
 		if n <= 1 {
 			return 0
 		}
 		return 1
 	},
-	fmtForms("nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);"): func(n int) int {
+	fmtForms("nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);"): func(n uint32) int {
 		if n%10 == 1 && n%100 != 11 {
 			return 0
 		}
@@ -72,7 +79,7 @@ var formulaTable = map[string]func(n int) int{
 		}
 		return 2
 	},
-	fmtForms("nplurals=3; plural=n==1 ? 0 : n==2 ? 1 : 2;"): func(n int) int {
+	fmtForms("nplurals=3; plural=n==1 ? 0 : n==2 ? 1 : 2;"): func(n uint32) int {
 		if n == 1 {
 			return 0
 		}
@@ -81,7 +88,7 @@ var formulaTable = map[string]func(n int) int{
 		}
 		return 2
 	},
-	fmtForms("nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2;"): func(n int) int {
+	fmtForms("nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2;"): func(n uint32) int {
 		if n == 1 {
 			return 0
 		}
@@ -90,7 +97,7 @@ var formulaTable = map[string]func(n int) int{
 		}
 		return 2
 	},
-	fmtForms("nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);"): func(n int) int {
+	fmtForms("nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);"): func(n uint32) int {
 		if n%10 == 1 && n%100 != 11 {
 			return 0
 		}
@@ -99,7 +106,7 @@ var formulaTable = map[string]func(n int) int{
 		}
 		return 2
 	},
-	fmtForms("nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"): func(n int) int {
+	fmtForms("nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"): func(n uint32) int {
 		if n%10 == 1 && n%100 != 11 {
 			return 0
 		}
@@ -108,7 +115,7 @@ var formulaTable = map[string]func(n int) int{
 		}
 		return 2
 	},
-	fmtForms("nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"): func(n int) int {
+	fmtForms("nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"): func(n uint32) int {
 		if n%10 == 1 && n%100 != 11 {
 			return 0
 		}
@@ -117,7 +124,7 @@ var formulaTable = map[string]func(n int) int{
 		}
 		return 2
 	},
-	fmtForms("nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"): func(n int) int {
+	fmtForms("nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"): func(n uint32) int {
 		if n%10 == 1 && n%100 != 11 {
 			return 0
 		}
@@ -126,7 +133,7 @@ var formulaTable = map[string]func(n int) int{
 		}
 		return 2
 	},
-	fmtForms("nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"): func(n int) int {
+	fmtForms("nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"): func(n uint32) int {
 		if n%10 == 1 && n%100 != 11 {
 			return 0
 		}
@@ -135,7 +142,7 @@ var formulaTable = map[string]func(n int) int{
 		}
 		return 2
 	},
-	fmtForms("nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"): func(n int) int {
+	fmtForms("nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"): func(n uint32) int {
 		if n%10 == 1 && n%100 != 11 {
 			return 0
 		}
@@ -144,7 +151,7 @@ var formulaTable = map[string]func(n int) int{
 		}
 		return 2
 	},
-	fmtForms("nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;"): func(n int) int {
+	fmtForms("nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;"): func(n uint32) int {
 		if n == 1 {
 			return 0
 		}
@@ -153,7 +160,7 @@ var formulaTable = map[string]func(n int) int{
 		}
 		return 2
 	},
-	fmtForms("nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;"): func(n int) int {
+	fmtForms("nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;"): func(n uint32) int {
 		if n == 1 {
 			return 0
 		}
@@ -162,7 +169,7 @@ var formulaTable = map[string]func(n int) int{
 		}
 		return 2
 	},
-	fmtForms("nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"): func(n int) int {
+	fmtForms("nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"): func(n uint32) int {
 		if n == 1 {
 			return 0
 		}
@@ -171,7 +178,7 @@ var formulaTable = map[string]func(n int) int{
 		}
 		return 2
 	},
-	fmtForms("nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);"): func(n int) int {
+	fmtForms("nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);"): func(n uint32) int {
 		if n%100 == 1 {
 			return 0
 		}

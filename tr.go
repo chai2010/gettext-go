@@ -6,7 +6,6 @@ package gettext
 
 import (
 	"encoding/json"
-
 	"github.com/ContextLogic/goi18n/mo"
 	"github.com/ContextLogic/goi18n/plural"
 	"github.com/ContextLogic/goi18n/po"
@@ -19,7 +18,7 @@ var nilTranslator = &translator{
 
 type translator struct {
 	MessageMap    map[string]mo.Message
-	PluralFormula func(n int) int
+	PluralFormula func(n uint32) int
 }
 
 func newMoTranslator(name string, data []byte) (*translator, error) {
@@ -42,7 +41,10 @@ func newMoTranslator(name string, data []byte) (*translator, error) {
 		tr.MessageMap[tr.makeMapKey(v.MsgContext, v.MsgId)] = v
 	}
 	if pluralFormHeader := f.MimeHeader.PluralForms; pluralFormHeader != "" {
-		tr.PluralFormula = plural.Formula(pluralFormHeader)
+		tr.PluralFormula, err = plural.Formula(pluralFormHeader)
+		if err != nil {
+			return nil, err
+		}
 	} else if lang := f.MimeHeader.Language; lang != "" {
 		tr.PluralFormula = plural.FormulaByLang(lang)
 	} else {
@@ -77,7 +79,10 @@ func newPoTranslator(name string, data []byte) (*translator, error) {
 		}
 	}
 	if pluralFormHeader := f.MimeHeader.PluralForms; pluralFormHeader != "" {
-		tr.PluralFormula = plural.Formula(pluralFormHeader)
+		tr.PluralFormula, err = plural.Formula(pluralFormHeader)
+		if err != nil {
+			return nil, err
+		}
 	} else if lang := f.MimeHeader.Language; lang != "" {
 		tr.PluralFormula = plural.FormulaByLang(lang)
 	} else {
@@ -126,7 +131,7 @@ func (p *translator) PGettext(msgctxt, msgid string) string {
 }
 
 func (p *translator) PNGettext(msgctxt, msgid, msgidPlural string, n int) string {
-	n = p.PluralFormula(n)
+	n = p.PluralFormula(uint32(n))
 	if ss := p.findMsgStrPlural(msgctxt, msgid, msgidPlural); len(ss) != 0 {
 		if n >= len(ss) {
 			n = len(ss) - 1
