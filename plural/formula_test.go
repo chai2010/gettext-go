@@ -10,7 +10,7 @@ import (
 
 func TestFormula(t *testing.T) {
 	for i, v := range testData {
-		if out := Formula(v.lang)(v.in); out != v.out {
+		if out := FormulaByLang(v.lang)(v.in); out != v.out {
 			t.Fatalf("%d/%s: expect = %d, got = %d", i, v.lang, v.out, out)
 		}
 	}
