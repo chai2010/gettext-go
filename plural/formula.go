@@ -5,19 +5,27 @@
 package plural
 
 import (
+	"errors"
 	gotextp "github.com/leonelquinteros/gotext/plurals"
-
 	"strings"
 )
 
 // Formula provides the language's standard plural formula.
 func Formula(pluralFormHeader string) (func(n uint32) int, error) {
-	expr, err := gotextp.Compile(pluralFormHeader)
-	if err != nil {
-		return nil, err
-	}
-	return expr.Eval, nil
+	pfs := strings.Split(pluralFormHeader, ";")
+	for _, i := range pfs {
+		vs := strings.SplitN(i, "=", 2)
+		if len(vs) != 2 || strings.TrimSpace(vs[0]) != "plural" {
+			continue
+		}
 
+		expr, err := gotextp.Compile(vs[1])
+		if err != nil {
+			return nil, err
+		}
+		return expr.Eval, nil
+	}
+	return nil, errors.New("no valid plural form found")
 }
 
 // FormulaByLang provides the language's standard plural formula.
