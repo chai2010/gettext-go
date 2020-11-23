@@ -132,7 +132,7 @@ func (p *translator) PGettext(msgctxt, msgid string) string {
 
 func (p *translator) PNGettext(msgctxt, msgid, msgidPlural string, n int) string {
 	n = p.PluralFormula(uint32(n))
-	if ss := p.findMsgStrPlural(msgctxt, msgid, msgidPlural); len(ss) != 0 {
+	if ss := p.findMsgStrPlural(msgctxt, msgid); len(ss) != 0 {
 		if n >= len(ss) {
 			n = len(ss) - 1
 		}
@@ -153,10 +153,10 @@ func (p *translator) findMsgStr(msgctxt, msgid string) string {
 			return v.MsgStr
 		}
 	}
-	return msgid
+	return p.PNGettext(msgctxt, msgid, "", 1)
 }
 
-func (p *translator) findMsgStrPlural(msgctxt, msgid, msgidPlural string) []string {
+func (p *translator) findMsgStrPlural(msgctxt, msgid string) []string {
 	key := p.makeMapKey(msgctxt, msgid)
 	if v, ok := p.MessageMap[key]; ok {
 		if len(v.MsgIdPlural) != 0 {
