@@ -131,16 +131,17 @@ func (p *translator) PGettext(msgctxt, msgid string) string {
 }
 
 func (p *translator) PNGettext(msgctxt, msgid, msgidPlural string, n int) string {
-	n = p.PluralFormula(uint32(n))
+	pluralFormN := p.PluralFormula(uint32(n))
 	if ss := p.findMsgStrPlural(msgctxt, msgid); len(ss) != 0 {
-		if n >= len(ss) {
-			n = len(ss) - 1
+		if pluralFormN >= len(ss) {
+			pluralFormN = len(ss) - 1
 		}
-		if ss[n] != "" {
-			return ss[n]
+		if ss[pluralFormN] != "" {
+			return ss[pluralFormN]
 		}
 	}
-	if msgidPlural != "" && n > 0 {
+	pluralFormN = plural.FormulaByLang("en")(uint32(n))
+	if msgidPlural != "" && pluralFormN > 0 {
 		return msgidPlural
 	}
 	return msgid
