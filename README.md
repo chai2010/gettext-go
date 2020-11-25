@@ -1,7 +1,5 @@
 # goi18n
 
-Forked from https://github.com/chai2010/gettext-go
-
 ## Usage
 
 1. Set up extraction and package build. See [this guide](https://wiki.wish.site/display/ENG/New+Project+Onboarding+Guide) for more information on how to set this up.
