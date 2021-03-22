@@ -14,7 +14,7 @@ This lib is in beta. Please report any bugs or suggestions to @pkuhanandan
     golangPackageLocaleDir := "path/to/package/locale"
     tr, err := i.NewTranslatorRepository(i.TranslatorRepositoryOptions{LocaleDir: golangPackageLocaleDir})
     ```
-    **:warning: Warning**: Depending on the size of your app, the `TranslationRepository` can get be expensive to create. For this reason, in most cases, you will want to initialize only one instance of TranslationRepository when you start your app/server and keep it available in memory. 
+    **:warning: Warning**: Depending on the size of your app, the `TranslationRepository` can be expensive to create. For this reason, in most cases, you will want to initialize only one instance of TranslationRepository when you start your app/server and keep it available in memory. 
 4. Now you can use your `TranslationRepository` to translate strings. See below for detailed usage instructions.
 
 ## Translation Functions
