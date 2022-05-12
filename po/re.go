@@ -21,7 +21,7 @@ var (
 	reMsgId        = regexp.MustCompile(`^msgid\s+".*"\s*$`)              // msgid
 	reMsgIdPlural  = regexp.MustCompile(`^msgid_plural\s+".*"\s*$`)       // msgid_plural
 	reMsgStr       = regexp.MustCompile(`^msgstr\s*".*"\s*$`)             // msgstr
-	reMsgStrPlural = regexp.MustCompile(`^msgstr\s*(\[\d+\])\s*".*"\s*$`) // msgstr[0]
+	reMsgStrPlural = regexp.MustCompile(`^msgstr\s*(\[(?P<index>\d+)\])\s*".*"\s*$`) // msgstr[0]
 	reStringLine   = regexp.MustCompile(`^\s*".*"\s*$`)                   // "message"
 	reBlankLine    = regexp.MustCompile(`^\s*$`)                          //
 )

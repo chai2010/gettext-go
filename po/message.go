@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"strconv"
-	"strings"
 )
 
 // A PO file is made up of many entries,
@@ -131,8 +130,13 @@ func (p *Message) readMsgStrOrPlural(r *lineReader) (err error) {
 		return
 	}
 	if reMsgStrPlural.MatchString(s) {
-		left, right := strings.Index(s, `[`), strings.LastIndex(s, `]`)
-		idx, _ := strconv.Atoi(s[left+1 : right])
+		names := reMsgStrPlural.SubexpNames()
+		result := reMsgStrPlural.FindAllStringSubmatch(s, -1)
+		m := map[string]string{}
+		for i, n := range result[0] {
+			m[names[i]] = n
+		}
+		idx, _ := strconv.Atoi(m["index"])
 		s, err = p.readString(r)
 		if n := len(p.MsgStrPlural); (idx + 1) > n {
 			p.MsgStrPlural = append(p.MsgStrPlural, make([]string, (idx+1)-n)...)
