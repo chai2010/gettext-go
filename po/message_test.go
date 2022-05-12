@@ -24,6 +24,40 @@ func _TestPoEntry(t *testing.T) {
 	}
 }
 
+// The original msgPlural entry index parsing simply parses the content within the first "[" and last "]". This logic is
+// wrong because the string itself can contain square brackets e.g "msgstr[0] Hello world [Here is text within brackets]"
+// This test case is for capturing regressions like this.
+func TestPluralParsing(t *testing.T) {
+	var entry Message
+	if err := entry.readPoEntry(newLineReader(pluralPoEntryString)); err != nil {
+		t.Fatal(err)
+	}
+
+	if len(entry.MsgStrPlural) != 2 {
+		t.Fail()
+	}
+
+	if entry.MsgStrPlural[0] != "Baix[1]ar CSV [{%2=warehouse name}] ({%1=number of products} linha)" {
+		t.Fail()
+	}
+
+	if entry.MsgStrPlural[1] != "Baix[2]ar CSV [{%2=warehouse name}] ({%1=number of products} linhas)" {
+		t.Fail()
+	}
+}
+
+var pluralPoEntryString = `
+# SOURCE: JAVASCRIPT
+#. File Name: /builds/ContextLogic/clroot/sweeper/merchant_dashboard/static/js/pkg/merchant/component/products/all-products/HeaderRow.tsx
+msgctxt "NAME OF BUTTON MERCHANTS CAN CLICK TO DOWNLOAD ALL THEIR PRODUCTS AS AN CSV "
+"FILE. INCLUDED IS THE NAME OF THE WAREHOUSE AND THE NUMBER OF ROWS THAT WILL "
+"BE IN THE FILE."
+msgid "Download CSV [{%2=warehouse name}] ({%1=number of products} row)"
+msgid_plural "Download CSV [{%2=warehouse name}] ({%1=number of products} rows)"
+msgstr	[0] "Baix[1]ar CSV [{%2=warehouse name}] ({%1=number of products} linha)"
+msgstr		[1] "Baix[2]ar CSV [{%2=warehouse name}] ({%1=number of products} linhas)"
+`
+
 var testPoEntryStrings = []string{
 	`
 # SOME DESCRIPTIVE TITLE.
