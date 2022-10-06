@@ -7,17 +7,18 @@ import (
 	"sync"
 )
 
+// TranslatorRepository is not thread safe, a thread safe wrapper called Translator Manager is provided
 type TranslatorRepository struct {
-	mutex     				sync.Mutex
-	localeDir				string
-	domain					string
-	translatorMap    		map[string]*Translator
-	currentLocale			string
+	mutex         sync.Mutex
+	localeDir     string
+	domain        string
+	translatorMap map[string]*Translator
+	currentLocale string
 }
 
 type TranslatorRepositoryOptions struct {
-	LocaleDir	string
-	Domain		*string
+	LocaleDir string
+	Domain    *string
 }
 
 // NewTranslatorRepository - Create a new TranslatorRepository. This struct
@@ -29,7 +30,7 @@ func NewTranslatorRepository(options TranslatorRepositoryOptions) (*TranslatorRe
 	}
 
 	translatorRepo := &TranslatorRepository{
-		domain: domain,
+		domain:    domain,
 		localeDir: options.LocaleDir,
 	}
 
@@ -57,9 +58,9 @@ func (t *TranslatorRepository) initTranslatorMap(localeDir string) error {
 		}
 		t.translatorMap[f.Name()] = nil
 	}
-	defaultGettexter := gettext.New(t.domain, t.localeDir).SetLanguage(t.getDefaultLocale())
-	defaultTranslator := Translator{&defaultGettexter}
-	t.translatorMap[t.getDefaultLocale()] = &defaultTranslator
+
+	t.createTranslaterInTranslatorMap(t.getDefaultLocale())
+	t.createTranslaterInTranslatorMap(t.getFallBackLocale())
 	return nil
 }
 
@@ -72,7 +73,7 @@ func (t *TranslatorRepository) GetAvailableLocales() []string {
 	return keys
 }
 
-// SetLocale - Switch the locale of the TranslatorRepository. All I18n calls to the
+// SetLocale - THIS IS NOT THREAD SAFE. Switch the locale of the TranslatorRepository. All I18n calls to the
 // TranslatorRepository will use this locale. If multiple goroutines are using the same
 // TranslatorRepository at the same time, use GetTranslator pattern instead.
 func (t *TranslatorRepository) SetLocale(locale string) error {
@@ -91,10 +92,14 @@ func (t *TranslatorRepository) findOrInitTranslator(locale string) (Translator, 
 	}
 
 	if t.translatorMap[locale] == nil {
-		newTranslator := t.createNewTranslator(locale)
-		t.translatorMap[locale] = &newTranslator
+		t.createTranslaterInTranslatorMap(locale)
 	}
 	return *t.translatorMap[locale], nil
+}
+
+func (t *TranslatorRepository) createTranslaterInTranslatorMap(locale string) {
+	newTranslator := t.createNewTranslator(locale)
+	t.translatorMap[locale] = &newTranslator
 }
 
 func (t *TranslatorRepository) createNewTranslator(locale string) Translator {
@@ -144,8 +149,14 @@ func (t *TranslatorRepository) getCurrentTranslator() Translator {
 	return translator
 }
 
+// This is kept for backward compatibility reasons, this should be avoided in case the source
+// is not English and "en" mo file was provided
 func (t *TranslatorRepository) getDefaultLocale() string {
 	return "en"
+}
+
+func (t *TranslatorRepository) getFallBackLocale() string {
+	return "default"
 }
 
 // GetLocaleDir - Get the localeDir
@@ -153,7 +164,7 @@ func (t *TranslatorRepository) GetLocaleDir() string {
 	return t.localeDir
 }
 
-// GetLocaleDir - Get the domain
+// GetDomain GetLocaleDir - Get the domain
 func (t *TranslatorRepository) GetDomain() string {
 	return t.domain
 }
@@ -161,4 +172,11 @@ func (t *TranslatorRepository) GetDomain() string {
 // GetLocale - Get the current locale
 func (t *TranslatorRepository) GetLocale() string {
 	return t.currentLocale
+}
+
+// GetFallBackTranslator - This provides a Translator what the MO file is guaranteed to be non-existent,
+// thus it will always return the original string
+func (t *TranslatorRepository) GetFallBackTranslator() Translator {
+	tr, _ := t.translatorMap[t.getFallBackLocale()]
+	return *tr
 }
