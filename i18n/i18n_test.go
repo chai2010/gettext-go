@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func buildTranslatorRepository() (*TranslatorRepository, error){
+func buildTranslatorRepository() (*TranslatorRepository, error) {
 	localeDir, err := filepath.Abs("fixtures/locale")
 	if err != nil {
 		return nil, err
@@ -26,19 +26,20 @@ func TestGetAvailableLocales(t *testing.T) {
 	}
 
 	expectedLocales := map[string]bool{
-		"de-DE": true,
-		"es-LA": true,
-		"fr-FR": true,
-		"hc":    true,
-		"ja-JP": true,
-		"ko-KR": true,
-		"zh-CN": true,
-		"zh-TW": true,
-		"en": 	 true,
+		"de-DE":   true,
+		"es-LA":   true,
+		"fr-FR":   true,
+		"hc":      true,
+		"ja-JP":   true,
+		"ko-KR":   true,
+		"zh-CN":   true,
+		"zh-TW":   true,
+		"en":      true,
+		"default": true,
 	}
 	actualLocales := tr.GetAvailableLocales()
-	if len(actualLocales) != 9 {
-		t.Fatalf("Expected 9 locales. Got %d", len(actualLocales))
+	if len(actualLocales) != 10 {
+		t.Fatalf("Expected 10 locales. Got %d", len(actualLocales))
 	}
 	for _, locale := range actualLocales {
 		if _, ok := expectedLocales[locale]; !ok {
@@ -124,11 +125,11 @@ func TestNi18n(t *testing.T) {
 	}
 
 	tr.currentLocale = ""
-	case1 := tr.Ni18n(1,"1 linked product", "{%1=number of products} linked products", 1)
+	case1 := tr.Ni18n(1, "1 linked product", "{%1=number of products} linked products", 1)
 	if case1 != "1 linked product" {
 		t.Fatalf("Expected singular string returned when no locale set. Got %s", case1)
 	}
-	case2 := tr.Ni18n(5,"1 linked product", "{%1=number of products} linked products", 5)
+	case2 := tr.Ni18n(5, "1 linked product", "{%1=number of products} linked products", 5)
 	if case2 != "5 linked products" {
 		t.Fatalf("Expected plural string returned when no locale set. Got %s", case2)
 	}
@@ -197,10 +198,10 @@ func TestCni18n(t *testing.T) {
 }
 
 type i18nCase struct {
-	locale 			 string
-	msg   	 		 string
-	args   	  		 []interface{}
-	expectedStr      string
+	locale      string
+	msg         string
+	args        []interface{}
+	expectedStr string
 }
 
 var i18nTestData = []i18nCase{
@@ -213,42 +214,40 @@ var i18nTestData = []i18nCase{
 }
 
 var Ni18nTestData = []struct {
-	locale 			 string
-	n		 		 int
-	msg   	 		 string
-	msgPlural 		 string
-	args   	  		 []interface{}
-	expectedStr      string
+	locale      string
+	n           int
+	msg         string
+	msgPlural   string
+	args        []interface{}
+	expectedStr string
 }{
-	{"fr-FR", 1,"1 linked product", "{%1=number of products} linked products", []interface{}{1}, "1 produit associé"},
-	{"fr-FR", 5,"1 linked product", "{%1=number of products} linked products", []interface{}{5}, "5 produits associés"},
-	{"ko-KR", 5,"1 linked product", "{%1=number of products} linked products", []interface{}{5}, "5 linked products"},
-	{"zh-CN", 1,"1 non-existent string", "{%1=number of products} non-existent strings", []interface{}{1}, "1 non-existent string"},
-	{"zh-CN", 5,"1 non-existent string", "{%1=number of products} non-existent strings", []interface{}{5}, "5 non-existent strings"},
+	{"fr-FR", 1, "1 linked product", "{%1=number of products} linked products", []interface{}{1}, "1 produit associé"},
+	{"fr-FR", 5, "1 linked product", "{%1=number of products} linked products", []interface{}{5}, "5 produits associés"},
+	{"ko-KR", 5, "1 linked product", "{%1=number of products} linked products", []interface{}{5}, "5 linked products"},
+	{"zh-CN", 1, "1 non-existent string", "{%1=number of products} non-existent strings", []interface{}{1}, "1 non-existent string"},
+	{"zh-CN", 5, "1 non-existent string", "{%1=number of products} non-existent strings", []interface{}{5}, "5 non-existent strings"},
 }
 
 var Ci18nTestData = []struct {
-	locale 			 string
-	ctx		 		 string
-	msg   	 		 string
-	args   	  		 []interface{}
-	expectedStr      string
+	locale      string
+	ctx         string
+	msg         string
+	args        []interface{}
+	expectedStr string
 }{
 	{"zh-TW", "LEGAL_CONSTANTS", "Terms of Use", nil, "使用條款"},
 	{"es-LA", "SOME CONTEXT", "View tickets", nil, "View tickets"},
 	{"ko-KR", "SOME CONTEXT", "Non-existent string", nil, "Non-existent string"},
-
 }
 
 var Cni18nTestData = []struct {
-	locale 			 string
-	ctx		 		 string
-	n		 		 int
-	msg   	 		 string
-	msgPlural 		 string
-	args   	  		 []interface{}
-	expectedStr      string
+	locale      string
+	ctx         string
+	n           int
+	msg         string
+	msgPlural   string
+	args        []interface{}
+	expectedStr string
 }{
-	{"fr-FR", "", 100,"1 linked product", "{%1=number of products} linked products", []interface{}{100}, "100 produits associés"},
-
+	{"fr-FR", "", 100, "1 linked product", "{%1=number of products} linked products", []interface{}{100}, "100 produits associés"},
 }
