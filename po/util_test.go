@@ -66,3 +66,17 @@ Plural-Forms: nplurals=1; plural=0;
 X-Generator: Poedit 1.5.5
 TestPoString: abc123
 `
+
+func TestRoundTripEscape(t *testing.T) {
+	s := "Hello\t\r\n"
+	encoded := encodePoString(s)
+	expect := `"Hello\t\r\n"
+`
+	if encoded != expect {
+		t.Fatalf("expect = %q; got = %q", expect, encoded)
+	}
+	decoded := decodePoString(encoded)
+	if decoded != s {
+		t.Fatalf("expect = %q; got = %q", s, decoded)
+	}
+}
