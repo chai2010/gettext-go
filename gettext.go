@@ -4,6 +4,8 @@
 
 package gettext
 
+import "sync"
+
 var (
 	DefaultLanguage string = getDefaultLanguage() // use $(LC_MESSAGES) or $(LANG) or "default"
 )
@@ -43,6 +45,8 @@ var defaultGettexter struct {
 	Gettexter
 }
 
+var defaultMu sync.RWMutex
+
 func init() {
 	defaultGettexter.lang = getDefaultLanguage()
 	defaultGettexter.domain = "default"
@@ -52,17 +56,22 @@ func init() {
 // BindLocale sets and queries program's domains.
 //
 // Examples:
+//
 //	BindLocale(New("poedit", "locale")) // bind "poedit" domain
 //
 // Use zip file:
+//
 //	BindLocale(New("poedit", "locale.zip"))          // bind "poedit" domain
 //	BindLocale(New("poedit", "locale.zip", zipData)) // bind "poedit" domain
 //
 // Use FileSystem:
+//
 //	BindLocale(New("poedit", "name", OS("path/to/dir"))) // bind "poedit" domain
 //	BindLocale(New("poedit", "name", OS("path/to.zip"))) // bind "poedit" domain
-//
 func BindLocale(g Gettexter) {
+	defaultMu.Lock()
+	defer defaultMu.Unlock()
+
 	if g != nil {
 		defaultGettexter.Gettexter = g
 		defaultGettexter.SetLanguage(defaultGettexter.lang)
@@ -81,10 +90,14 @@ func BindLocale(g Gettexter) {
 // Returns is the current locale.
 //
 // Examples:
+//
 //	SetLanguage("")      // get locale: return DefaultLocale
 //	SetLanguage("zh_CN") // set locale: return zh_CN
 //	SetLanguage("")      // get locale: return zh_CN
 func SetLanguage(lang string) string {
+	defaultMu.Lock()
+	defer defaultMu.Unlock()
+
 	defaultGettexter.SetLanguage(lang)
 	return defaultGettexter.GetLanguage()
 }
@@ -98,9 +111,13 @@ func SetLanguage(lang string) string {
 // Returns is the all used domains.
 //
 // Examples:
+//
 //	SetDomain("poedit") // set domain: poedit
 //	SetDomain("")       // get domain: return poedit
 func SetDomain(domain string) string {
+	defaultMu.Lock()
+	defer defaultMu.Unlock()
+
 	defaultGettexter.SetDomain(domain)
 	return defaultGettexter.GetDomain()
 }
@@ -111,10 +128,14 @@ func SetDomain(domain string) string {
 // It use the caller's function name as the msgctxt.
 //
 // Examples:
+//
 //	func Foo() {
 //		msg := gettext.Gettext("Hello") // msgctxt is ""
 //	}
 func Gettext(msgid string) string {
+	defaultMu.RLock()
+	defer defaultMu.RUnlock()
+
 	return defaultGettexter.Gettext(msgid)
 }
 
@@ -122,12 +143,16 @@ func Gettext(msgid string) string {
 // by looking up the translation in a message catalog.
 //
 // Examples:
+//
 //	func Foo() {
 //		Textdomain("hello")
 //		BindLocale("hello", "locale.zip", nilOrZipData)
 //		poems := gettext.Getdata("poems.txt")
 //	}
 func Getdata(name string) []byte {
+	defaultMu.RLock()
+	defer defaultMu.RUnlock()
+
 	return defaultGettexter.Getdata(name)
 }
 
@@ -138,10 +163,14 @@ func Getdata(name string) []byte {
 // It use the caller's function name as the msgctxt.
 //
 // Examples:
+//
 //	func Foo() {
 //		msg := gettext.NGettext("%d people", "%d peoples", 2)
 //	}
 func NGettext(msgid, msgidPlural string, n int) string {
+	defaultMu.RLock()
+	defer defaultMu.RUnlock()
+
 	return defaultGettexter.NGettext(msgid, msgidPlural, n)
 }
 
@@ -149,10 +178,14 @@ func NGettext(msgid, msgidPlural string, n int) string {
 // by looking up the translation in a message catalog.
 //
 // Examples:
+//
 //	func Foo() {
 //		msg := gettext.PGettext("gettext-go.example", "Hello") // msgctxt is "gettext-go.example"
 //	}
 func PGettext(msgctxt, msgid string) string {
+	defaultMu.RLock()
+	defer defaultMu.RUnlock()
+
 	return defaultGettexter.PGettext(msgctxt, msgid)
 }
 
@@ -161,59 +194,83 @@ func PGettext(msgctxt, msgid string) string {
 // catalog.
 //
 // Examples:
+//
 //	func Foo() {
 //		msg := gettext.PNGettext("gettext-go.example", "%d people", "%d peoples", 2)
 //	}
 func PNGettext(msgctxt, msgid, msgidPlural string, n int) string {
+	defaultMu.RLock()
+	defer defaultMu.RUnlock()
+
 	return defaultGettexter.PNGettext(msgctxt, msgid, msgidPlural, n)
 }
 
 // DGettext like Gettext(), but looking up the message in the specified domain.
 //
 // Examples:
+//
 //	func Foo() {
 //		msg := gettext.DGettext("poedit", "Hello")
 //	}
 func DGettext(domain, msgid string) string {
+	defaultMu.RLock()
+	defer defaultMu.RUnlock()
+
 	return defaultGettexter.DGettext(domain, msgid)
 }
 
 // DNGettext like NGettext(), but looking up the message in the specified domain.
 //
 // Examples:
+//
 //	func Foo() {
 //		msg := gettext.PNGettext("poedit", "gettext-go.example", "%d people", "%d peoples", 2)
 //	}
 func DNGettext(domain, msgid, msgidPlural string, n int) string {
+	defaultMu.RLock()
+	defer defaultMu.RUnlock()
+
 	return defaultGettexter.DNGettext(domain, msgid, msgidPlural, n)
 }
 
 // DPGettext like PGettext(), but looking up the message in the specified domain.
 //
 // Examples:
+//
 //	func Foo() {
 //		msg := gettext.DPGettext("poedit", "gettext-go.example", "Hello")
 //	}
 func DPGettext(domain, msgctxt, msgid string) string {
+	defaultMu.RLock()
+	defer defaultMu.RUnlock()
+
 	return defaultGettexter.DPGettext(domain, msgctxt, msgid)
 }
 
 // DPNGettext like PNGettext(), but looking up the message in the specified domain.
 //
 // Examples:
+//
 //	func Foo() {
 //		msg := gettext.DPNGettext("poedit", "gettext-go.example", "%d people", "%d peoples", 2)
 //	}
 func DPNGettext(domain, msgctxt, msgid, msgidPlural string, n int) string {
+	defaultMu.RLock()
+	defer defaultMu.RUnlock()
+
 	return defaultGettexter.DPNGettext(domain, msgctxt, msgid, msgidPlural, n)
 }
 
 // DGetdata like Getdata(), but looking up the resource in the specified domain.
 //
 // Examples:
+//
 //	func Foo() {
 //		msg := gettext.DGetdata("hello", "poems.txt")
 //	}
 func DGetdata(domain, name string) []byte {
+	defaultMu.RLock()
+	defer defaultMu.RUnlock()
+
 	return defaultGettexter.DGetdata(domain, name)
 }
