@@ -9,8 +9,9 @@ import (
 	"fmt"
 	"io"
 	"strconv"
-	"strings"
 )
+
+const maxPluralIndex = 1000
 
 // A PO file is made up of many entries,
 // each entry holding the relation between an original untranslated string
@@ -131,8 +132,16 @@ func (p *Message) readMsgStrOrPlural(r *lineReader) (err error) {
 		return
 	}
 	if reMsgStrPlural.MatchString(s) {
-		left, right := strings.Index(s, `[`), strings.LastIndex(s, `]`)
-		idx, _ := strconv.Atoi(s[left+1 : right])
+		m := reMsgStrPlural.FindStringSubmatch(s)
+		idx, aerr := strconv.Atoi(m[1][1 : len(m[1])-1])
+		if aerr != nil {
+			err = fmt.Errorf("gettext: line %d, invalid msgstr index: %v", r.currentPos(), aerr)
+			return
+		}
+		if idx > maxPluralIndex {
+			err = fmt.Errorf("gettext: line %d, msgstr index too large: %d", r.currentPos(), idx)
+			return
+		}
 		s, err = p.readString(r)
 		if n := len(p.MsgStrPlural); (idx + 1) > n {
 			p.MsgStrPlural = append(p.MsgStrPlural, make([]string, (idx+1)-n)...)
